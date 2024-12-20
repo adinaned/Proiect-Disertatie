@@ -1,0 +1,15 @@
+<div class="auth-box">
+    <h2>Register</h2>
+    <div class="toggle-buttons">
+        <button (click)="handleLogin()">Login</button>
+        <button class="active">Register</button>
+    </div>
+    <form>
+        <input type="text" placeholder="First Name" required>
+        <input type="text" placeholder="Last Name" required>
+        <input type="email" placeholder="Email" required>
+        <input type="password" placeholder="Password" required>
+        <input type="password" placeholder="Confirm Password" required>
+        <button type="submit" (click)="handleRegister()">Submit</button>
+    </form>
+</div>

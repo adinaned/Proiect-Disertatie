@@ -1,0 +1,102 @@
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #d9d9d9;
+  margin: 0;
+  padding: 0;
+}
+
+.body-background {
+  padding: 1em;
+}
+
+.header {
+  background-color: #1e4c57;
+  border-radius: 25px;
+  color: #d9d9d9;
+  font-size: 2.5em;
+  font-weight: bold;
+  padding: 1em;
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+.voting-session-container1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1e4c57;
+  border-radius: 25px;
+  height: calc(100vh - 100px);
+  padding: 1em;
+}
+
+.voting-session-container2 {
+  background-color: #ffffff;
+  border-radius: 25px;
+  padding: 2em;
+  width: 80%;
+  max-width: 600px;
+}
+
+.session-title {
+  color: #1e4c57;
+  font-size: 1.8em;
+  margin-bottom: 1em;
+}
+
+.session-question {
+  color: #1e4c57;
+  font-size: 1.2em;
+  margin-bottom: 1em;
+}
+
+.options-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.option input[type="checkbox"] {
+  margin-right: 0.5em;
+  transform: scale(1.2);
+}
+
+.option label {
+  color: #666666;
+  font-size: 1em;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 2em;
+}
+
+.submit-btn, .cancel-btn {
+  background-color: #1e4c57;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  padding: 0.5em 2em;
+  margin: 0 0.5em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover, .cancel-btn:hover {
+  background-color: #163d47;
+}
+
+.cancel-btn {
+  background-color: #666666;
+}
+
+.cancel-btn:hover {
+  background-color: #444444;
+}

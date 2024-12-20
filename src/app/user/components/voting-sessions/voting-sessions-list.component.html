@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voting Sessions</title>
+</head>
+<body>
+<div class="body-background">
+  <div class="header">
+    Software Voting Machine
+  </div>
+
+  <div class="voting-sessions-container1">
+    <div class="voting-sessions-container2">
+      <h2 class="sessions-title">Voting sessions</h2>
+
+      <div class="session">
+        <div class="session-header">
+          <span>Session 1 (Status: <span class="status open">open</span>)</span>
+          <span class="time-remaining">1 day, 01:01:01 hours remaining</span>
+        </div>
+        <div class="session-body">
+          <p>Cats or dogs?</p>
+          <button class="vote-btn active">Vote</button>
+        </div>
+      </div>
+
+      <div class="session">
+        <div class="session-header">
+          <span>Session 2 (Status: <span class="status submitted">vote submitted</span>)</span>
+          <span class="time-remaining">1 day, 01:01:01 hours remaining</span>
+        </div>
+        <div class="session-body">
+          <p>Cats or dogs?</p>
+          <p class="info-text">Go to https://voting_stats to see this session’s statistics</p>
+          <button class="vote-btn disabled" disabled>Vote</button>
+        </div>
+      </div>
+
+      <div class="session">
+        <div class="session-header">
+          <span>Session 3 (Status: <span class="status closed">closed</span>)</span>
+          <span class="time-remaining"></span>
+        </div>
+        <div class="session-body">
+          <p>Cats or dogs?</p>
+          <button class="vote-btn disabled" disabled>Vote</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
