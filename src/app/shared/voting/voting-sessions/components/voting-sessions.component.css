@@ -1,0 +1,91 @@
+.container {
+    position: absolute;
+    top: 1em;
+    left: 2em;
+    width: 95%;
+    max-width: none;
+    height: 70vh;
+    overflow-y: auto;
+}
+
+h2, p, span {
+    margin-bottom: 20px;
+    color: #1e4c57;
+}
+
+.status {
+    font-weight: bold;
+}
+
+.status.open span {
+    color: gold;
+}
+
+.status.submitted span {
+    color: green;
+}
+
+.status.closed span {
+    color: red;
+}
+
+.question-box {
+    background-color: #ddd;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.stats-link {
+    font-size: 14px;
+    color: #333;
+}
+.session {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.footer {
+    display: flex;
+    align-items: center; /* Asigură alinierea pe verticală */
+    justify-content: flex-end;
+    gap: 1em;
+    height: 100%; /* Se asigură că ambele elemente au aceeași înălțime */
+}
+
+.time-remaining {
+    font-size: 14px;
+    color: #555;
+    white-space: nowrap; /* Evită ca textul să treacă pe linia următoare */
+    line-height: 40px; /* Setează aceeași înălțime ca butonul */
+}
+
+.vote-btn {
+    background-color: #1e4c57;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    min-width: 80px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vote-btn:hover {
+    background-color: #456;
+}
+
+.vote-btn.disabled {
+    background-color: #d9d9d9;
+    cursor: not-allowed;
+}

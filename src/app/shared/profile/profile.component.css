@@ -1,0 +1,68 @@
+.profile-box {
+    position: absolute;
+    top: 1em;
+    left: 1em;
+}
+.auth-box {
+    background-color: #d9d9d9;
+    padding: 40px;
+    border-radius: 25px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 50vh;
+    width: 85%;
+}
+.profile-form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    color: #1e4c57;
+    margin-right: 0.5em;
+}
+
+.profile-form {
+    width: 100%;
+    max-width: 60vw;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+#address-form {
+    width: 100em;
+}
+
+.form-group {
+    width: 48%;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 0.25em;
+    margin-left: 0.5em;
+}
+
+.profile-form input,
+.profile-form select {
+    background-color: #fafaff;
+    width: 100%;
+    padding: 10px;
+    border-radius: 25px;
+    border: 1px solid #d9d9d9;
+    box-sizing: border-box;
+}
+
+select {
+    color: #1e4c57;
+    font-size: 16px;
+    appearance: none;
+    cursor: pointer;
+}
