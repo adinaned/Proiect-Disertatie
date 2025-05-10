@@ -4,7 +4,7 @@ from .email_service import (
     create_email, update_email, get_email_by_id, get_all_emails, delete_email)
 from .option_service import (
     create_option, update_option, get_option_by_id, get_all_options, delete_option)
-from .organisation_service import (
+from .organization_service import (
     create_organisation, update_organisation, get_organisation_by_id,
     get_all_organisations, delete_organisation)
 from .password_service import (

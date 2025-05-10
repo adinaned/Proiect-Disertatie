@@ -22,7 +22,7 @@ class User(db.Model):
     email = relationship("Email")
     country = relationship("Country")
     role = relationship("Role")
-    organisation = relationship("Organisation")
+    organization = relationship("Organization")
     profile_status = relationship("ProfileStatus")
 
     def to_dict(self):

@@ -5,7 +5,7 @@ db = SQLAlchemy()
 from .country import Country
 from .email import Email
 from .option import Option
-from .organisation import Organisation
+from .organization import Organization
 from .password import Password
 from .profile_status import ProfileStatus
 from .question import Question

@@ -1,11 +1,21 @@
-.container {
+.container1 {
     position: absolute;
     top: 1em;
     left: 2em;
     width: 95%;
     max-width: none;
-    height: 70vh;
-    overflow-y: auto;
+}
+
+.container2 {
+    height: 60vh;
+    overflow-y: scroll;
+    padding-right: 2em;
+    scrollbar-width: auto;
+    scrollbar-color: #1e4c57 #ffffff;
+}
+.container1::-webkit-scrollbar-thumb {
+    background-color: #1e4c57;
+    border-radius: 10px;
 }
 
 h2, p, span {
@@ -30,9 +40,10 @@ h2, p, span {
 }
 
 .question-box {
-    background-color: #ddd;
-    padding: 10px;
-    border-radius: 5px;
+    background-color: #d9d9d9;
+    padding-left: 1em;
+    padding-bottom: 1em;
+    border-radius: 20px;
 }
 
 .stats-link {
@@ -54,27 +65,28 @@ h2, p, span {
 
 .footer {
     display: flex;
-    align-items: center; /* Asigură alinierea pe verticală */
+    align-items: center;
     justify-content: flex-end;
     gap: 1em;
-    height: 100%; /* Se asigură că ambele elemente au aceeași înălțime */
+    height: 100%;
+    flex-wrap: wrap;
 }
 
 .time-remaining {
     font-size: 14px;
     color: #555;
-    white-space: nowrap; /* Evită ca textul să treacă pe linia următoare */
-    line-height: 40px; /* Setează aceeași înălțime ca butonul */
+    white-space: nowrap;
+    line-height: 40px;
 }
 
 .vote-btn {
     background-color: #1e4c57;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 20px;
     cursor: pointer;
     font-size: 14px;
-    min-width: 80px;
+    min-width: 8em;
     height: 40px;
     display: flex;
     align-items: center;

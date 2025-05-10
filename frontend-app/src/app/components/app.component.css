@@ -1,31 +1,140 @@
 .header {
     background-color: #1e4c57;
-    border-radius: 25px;
+    border-radius: 20px;
     color: #d9d9d9;
-    font-size: 4vh;
+    display: flex;
     font-weight: bold;
     padding: 1em;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
+    margin: 1em;
     text-align: center;
 }
 
+.left-section,
+.right-section {
+    width: 15%;
+    display: flex;
+    align-items: center;
+}
+
+.left-section {
+    justify-content: flex-start;
+}
+
+.center-section {
+    width: 70%;
+    text-align: center;
+}
+
+.right-section {
+    justify-content: flex-end;
+}
+
+.title {
+    font-size: 4vh;
+}
+
+.home-btn {
+    background: none;
+    border: none;
+    color: #d9d9d9;
+    font-size: 1.5em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 1.5em;
+}
+
+.home-btn:hover {
+    color: white;
+}
+
+.user-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.user-wrapper img {
+    width: 7vh;
+    height: 7vh;
+    margin-right: 1.5em;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background-color: #d9d9d9;
+    border-radius: 25px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 220px;
+    padding: 15px 15px 15px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.dropdown a {
+    background-color: #f5f5f7;
+    width: 90%;
+    border-radius: 40px;
+    padding: 10px;
+    text-align: center;
+    font-weight: normal;
+    color: #1e4c57;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.dropdown a:last-child {
+    background-color: transparent;
+    width: 90%;
+    border-radius: 0;
+    padding: 10px;
+    font-weight: bold;
+}
+
+
+.home-btn {
+    background-color: transparent;
+    border: none;
+    color: #d9d9d9;
+    font-size: 1.5em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 0.5em;
+}
+
+.home-btn:hover {
+    color: white;
+}
+
+img {
+    width: 7vh;
+    height: 7vh;
+    margin-right: 0.5em;
+    cursor: pointer;
+}
 .body-container1 {
     align-items: center;
     background-color: #1e4c57;
-    border-radius: 25px;
+    border-radius: 20px;
     display: flex;
-    height: calc(90vh - 70px);
+    height: calc(90vh - 80px);
     justify-content: center;
     position: relative;
+    margin: 1em;
 }
 
 .body-container2 {
     align-items: center;
     background-color: #fafaff;
-    border-radius: 25px;
+    border-radius: 20px;
     display: flex;
-    height: 94%;
+    height: 92%;
     justify-content: center;
     position: relative;
     width: 97%;

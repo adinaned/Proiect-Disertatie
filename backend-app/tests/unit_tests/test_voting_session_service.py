@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime, timedelta
-from models import VotingSession, Role, Organisation, db
+from models import VotingSession, Role, Organization, db
 from services.voting_session_service import (
     create_voting_session,
     get_voting_session_by_id,
@@ -27,23 +27,23 @@ class TestVotingSessionService(unittest.TestCase):
 
         VotingSession.metadata.create_all(db.engine)
         Role.metadata.create_all(db.engine)
-        Organisation.metadata.create_all(db.engine)
+        Organization.metadata.create_all(db.engine)
 
         # Add test dependencies
         self.test_role = Role(name="Test Role", organisation_id=1)
-        self.test_organisation = Organisation(name="Test Organisation")
+        self.test_organisation = Organization(name="Test Organization")
         self.session.add_all([self.test_role, self.test_organisation])
         self.session.commit()
 
     def tearDown(self):
         self.session.query(VotingSession).delete()
         self.session.query(Role).delete()
-        self.session.query(Organisation).delete()
+        self.session.query(Organization).delete()
         self.session.commit()
 
         VotingSession.metadata.drop_all(db.engine)
         Role.metadata.drop_all(db.engine)
-        Organisation.metadata.drop_all(db.engine)
+        Organization.metadata.drop_all(db.engine)
 
         self.app_context.pop()
 

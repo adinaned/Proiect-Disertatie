@@ -1,0 +1,36 @@
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 4em;
+    gap: 1em;
+}
+
+.unsaved-warning {
+    color: #b02e2e;
+    font-weight: bold;
+    font-size: 14px;
+    margin: 0;
+}
+
+.button-group {
+    display: flex;
+    gap: 1em;
+}
+
+.cancel-btn,
+.save-btn {
+    background-color: #1e4c57;
+    color: #fafaff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.cancel-btn:hover,
+.save-btn:hover {
+    background-color: #163a44;
+}

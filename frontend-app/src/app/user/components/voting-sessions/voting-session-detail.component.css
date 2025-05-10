@@ -1,102 +1,160 @@
-body {
-  font-family: "Roboto", sans-serif;
-  background-color: #d9d9d9;
-  margin: 0;
-  padding: 0;
+.vote-container1 {
+    color: #1e4c57;
+    font-weight: bold;
+    position: absolute;
+    top: 1em;
+    left: 2em;
+    width: 100%;
 }
 
-.body-background {
-  padding: 1em;
+.vote-container1 h2 {
+    text-align: left;
+    font-size: 25px;
 }
 
-.header {
-  background-color: #1e4c57;
-  border-radius: 25px;
-  color: #d9d9d9;
-  font-size: 2.5em;
-  font-weight: bold;
-  padding: 1em;
-  text-align: center;
-  margin-bottom: 1em;
+.active {
+    color: #33a92a;
 }
 
-.voting-session-container1 {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #1e4c57;
-  border-radius: 25px;
-  height: calc(100vh - 100px);
-  padding: 1em;
-}
-
-.voting-session-container2 {
-  background-color: #ffffff;
-  border-radius: 25px;
-  padding: 2em;
-  width: 80%;
-  max-width: 600px;
+.vote-container2 {
+    background-color: #d9d9d9;
+    border-radius: 20px;
+    width: 90vw;
+    height: 55vh;
+    overflow-y: scroll;
 }
 
 .session-title {
-  color: #1e4c57;
-  font-size: 1.8em;
-  margin-bottom: 1em;
+    color: #1e4c57;
+    font-size: 2em;
 }
 
-.session-question {
-  color: #1e4c57;
-  font-size: 1.2em;
-  margin-bottom: 1em;
+.question-box {
+    background-color: #d9d9d9;
+    border-radius: 20px;
+    width: 100%;
+    margin-top: 1em;
+    margin-left: 1em;
+    max-width: 600px;
+    box-sizing: border-box;
+    font-size: 17px;
 }
 
-.options-form {
-  display: flex;
-  flex-direction: column;
+.question {
+    font-weight: bold;
+    color: #1e4c57;
+    margin-bottom: 1.5em;
+}
+
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    margin-bottom: 2em;
 }
 
 .option {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1em;
+    display: flex;
+    align-items: center;
+    margin-left: 1em;
 }
 
 .option input[type="checkbox"] {
-  margin-right: 0.5em;
-  transform: scale(1.2);
+    /*appearance: none;*/
+    margin-right: 0.5em;
+    transform: scale(1.2);
+    width: 17px;
+    height: 17px;
+    background-color: #d9d9d9;
+    border-radius: 5px;
+    border: 2px solid #1e4c57;
+    cursor: pointer;
+    color: #d9d9d9;
 }
 
 .option label {
-  color: #666666;
-  font-size: 1em;
+    color: #1e4c57;
+    font-weight: normal;
+    margin-left: 0.5em;
 }
 
 .form-buttons {
-  display: flex;
-  justify-content: center;
-  margin-top: 2em;
+    display: flex;
+    justify-content: center;
+    gap: 2em;
 }
 
-.submit-btn, .cancel-btn {
-  background-color: #1e4c57;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 1em;
-  padding: 0.5em 2em;
-  margin: 0 0.5em;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.submit-btn:hover, .cancel-btn:hover {
-  background-color: #163d47;
-}
-
+.submit-btn,
 .cancel-btn {
-  background-color: #666666;
+    background-color: #1e4c57;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 1em;
+    padding: 0.6em 2em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 15vh;
 }
 
+.submit-btn:hover,
 .cancel-btn:hover {
-  background-color: #444444;
+    background-color: #163d47;
+}
+
+.overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.4);
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 25vh;
+}
+
+.overlay.result {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.popup-box1 {
+    background-color: #1e4c57;
+    border-radius: 20px;
+}
+
+.popup-box2 {
+    background-color: #d9d9d9;
+    padding: 2em;
+    margin: 1em;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 400px;
+}
+
+.popup-box2 p {
+    font-weight: normal;
+    color: #1e4c57;
+}
+
+.popup-buttons {
+    margin-top: 1.5em;
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+}
+
+.popup-buttons button {
+    background-color: #1e4c57;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 0.5em 2em;
+    cursor: pointer;
+}
+
+.popup-buttons button:hover {
+    background-color: #163d47;
 }

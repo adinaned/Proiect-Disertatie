@@ -1,0 +1,88 @@
+.profile-box1 {
+    color: #1e4c57;
+    font-weight: bold;
+    position: absolute;
+    top: 2em;
+    left: 1.5em;
+    width: 100%;
+}
+
+.profile-box1 h2 {
+    text-align: left;
+}
+
+.active {
+    color: #33a92a;
+}
+
+.profile-box2 {
+    background-color: #d9d9d9;
+    padding: 40px;
+    border-radius: 20px;
+    width: 100vw;
+    max-width: 1300px;
+    height: 43vh;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5em 2em;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 0.25em;
+    color: #1e4c57;
+    margin-left: 0.25em;
+}
+
+.form-group input {
+    background-color: #fafaff;
+    width: 100%;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #d9d9d9;
+    box-sizing: border-box;
+}
+
+.span-2 {
+    grid-column: span 2;
+}
+
+.profile-form input {
+    background-color: #fafaff;
+    width: 100%;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #d9d9d9;
+    box-sizing: border-box;
+}
+
+.profile-form input,
+.profile-form select,
+.field-value {
+    background-color: #fafaff;
+    width: 100%;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #d9d9d9;
+    box-sizing: border-box;
+}
+
+.field-value {
+    font-weight: normal;
+}
+
+select {
+    color: #1e4c57;
+    font-size: 16px;
+    appearance: none;
+    cursor: pointer;
+}

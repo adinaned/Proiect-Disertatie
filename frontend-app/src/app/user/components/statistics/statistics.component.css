@@ -1,4 +1,4 @@
-.forgot-password-box {
+.voting-sessions-container {
     position: absolute;
     left: 2em;
     top: 3em;
@@ -19,7 +19,7 @@ p {
     margin-bottom: 20px;
 }
 
-.email-input {
+.token-input {
     background-color: #d9d9d9;
     border: 1px solid #d9d9d9;
     border-radius: 20px;

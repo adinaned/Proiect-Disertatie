@@ -1,43 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Voting Session</title>
-</head>
-<body>
-<div class="body-background">
-  <div class="header">
-    Software Voting Machine
-  </div>
-  <div class="voting-session-container1">
-    <div class="voting-session-container2">
-      <h2 class="session-title">Session 1</h2>
-      <p class="session-question">Cats, dogs, bunnies or hamsters?</p>
-      <form class="options-form">
-        <div class="option">
-          <input type="checkbox" id="cats" name="option" value="Cats" checked>
-          <label for="cats">Cats</label>
+<div class="vote-container1">
+    <h2 class="session-title">Session 1</h2>
+    <div class="vote-container2">
+        <div class="question-box">
+            <p class="question">Cats, dogs, bunnies or hamsters?</p>
+
+            <div class="options-list">
+                <div class="option"><input type="checkbox" id="cats"><label for="cats">Cats</label></div>
+                <div class="option"><input type="checkbox" id="dogs"><label for="dogs">Dogs</label></div>
+                <div class="option"><input type="checkbox" id="bunnies"><label for="bunnies">Bunnies</label></div>
+                <div class="option"><input type="checkbox" id="hamsters"><label for="hamsters">Hamsters</label></div>
+            </div>
         </div>
-        <div class="option">
-          <input type="checkbox" id="dogs" name="option" value="Dogs">
-          <label for="dogs">Dogs</label>
-        </div>
-        <div class="option">
-          <input type="checkbox" id="bunnies" name="option" value="Bunnies">
-          <label for="bunnies">Bunnies</label>
-        </div>
-        <div class="option">
-          <input type="checkbox" id="hamsters" name="option" value="Hamsters">
-          <label for="hamsters">Hamsters</label>
-        </div>
+
         <div class="form-buttons">
-          <button type="submit" class="submit-btn">Submit</button>
-          <button type="button" class="cancel-btn">Cancel</button>
+            <button class="submit-btn" (click)="openPopup()">Submit</button>
+            <button class="cancel-btn">Cancel</button>
         </div>
-      </form>
     </div>
-  </div>
 </div>
-</body>
-</html>
+
+<!-- Confirmare -->
+<div class="overlay" *ngIf="popupType === 'confirm'">
+    <div class="popup-box1">
+        <div class="popup-box2">
+            <p>We are about to submit your vote. Are you sure about your option?</p>
+            <div class="popup-buttons">
+                <button (click)="submitVote()">Yes</button>
+                <button (click)="closePopup()">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rezultat -->
+<div class="overlay result" *ngIf="popupType === 'result'">
+    <div class="popup-box1">
+        <div class="popup-box2">
+            <p>Your vote was registered!</p>
+            <p>Make sure to copy your personal access token now as you will not be able to see this again.</p>
+            <p>Token: abcdefghijklmnopwrstuvwxyz.</p>
+            <div class="popup-buttons">
+                <button (click)="closePopup()">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 import unittest
 from datetime import date
-from models import User, Role, Organisation, ProfileStatus, Country, db
+from models import User, Role, Organization, ProfileStatus, Country, db
 from services.user_service import (
     create_user,
     get_user_by_id,
@@ -27,13 +27,13 @@ class TestUserService(unittest.TestCase):
 
         # Create tables
         User.metadata.create_all(db.engine)
-        Organisation.metadata.create_all(db.engine)
+        Organization.metadata.create_all(db.engine)
         Role.metadata.create_all(db.engine)
         ProfileStatus.metadata.create_all(db.engine)
         Country.metadata.create_all(db.engine)
 
         # Add test dependencies
-        self.test_organisation = Organisation(name="Test Organisation")
+        self.test_organisation = Organization(name="Test Organization")
         self.test_role = Role(name="Test Role", organisation_id=1)
         self.test_profile_status = ProfileStatus(name=ProfileStatusEnum.ACTIVE)
         self.test_country = Country(name="Test Country")
@@ -43,7 +43,7 @@ class TestUserService(unittest.TestCase):
 
     def tearDown(self):
         self.session.query(User).delete()
-        self.session.query(Organisation).delete()
+        self.session.query(Organization).delete()
         self.session.query(Role).delete()
         self.session.query(ProfileStatus).delete()
         self.session.query(Country).delete()
@@ -51,7 +51,7 @@ class TestUserService(unittest.TestCase):
 
         # Drop tables
         User.metadata.drop_all(db.engine)
-        Organisation.metadata.drop_all(db.engine)
+        Organization.metadata.drop_all(db.engine)
         Role.metadata.drop_all(db.engine)
         ProfileStatus.metadata.drop_all(db.engine)
         Country.metadata.drop_all(db.engine)

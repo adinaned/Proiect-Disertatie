@@ -403,12 +403,12 @@
                 "tags": [
                     "Organisations"
                 ],
-                "summary": "Create a new organisation",
-                "description": "Creates a new organisation with the given data.",
+                "summary": "Create a new organization",
+                "description": "Creates a new organization with the given data.",
                 "parameters": [
                     {
                         "in": "body",
-                        "name": "organisation",
+                        "name": "organization",
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/OrganisationCreate"
@@ -417,7 +417,7 @@
                 ],
                 "responses": {
                     "201": {
-                        "description": "Organisation created successfully",
+                        "description": "Organization created successfully",
                         "schema": {
                             "$ref": "#/definitions/OrganisationResponse"
                         }
@@ -451,8 +451,8 @@
                 "tags": [
                     "Organisations"
                 ],
-                "summary": "Get an organisation by ID",
-                "description": "Retrieves the organisation with the specified ID.",
+                "summary": "Get an organization by ID",
+                "description": "Retrieves the organization with the specified ID.",
                 "parameters": [
                     {
                         "name": "organisation_id",
@@ -463,13 +463,13 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Organisation found",
+                        "description": "Organization found",
                         "schema": {
                             "$ref": "#/definitions/OrganisationResponse"
                         }
                     },
                     "404": {
-                        "description": "Organisation not found"
+                        "description": "Organization not found"
                     }
                 }
             },
@@ -477,8 +477,8 @@
                 "tags": [
                     "Organisations"
                 ],
-                "summary": "Update an organisation by ID",
-                "description": "Updates the organisation with the given ID using the provided data.",
+                "summary": "Update an organization by ID",
+                "description": "Updates the organization with the given ID using the provided data.",
                 "parameters": [
                     {
                         "name": "organisation_id",
@@ -488,7 +488,7 @@
                     },
                     {
                         "in": "body",
-                        "name": "organisation",
+                        "name": "organization",
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/OrganisationCreate"
@@ -497,13 +497,13 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Organisation updated successfully",
+                        "description": "Organization updated successfully",
                         "schema": {
                             "$ref": "#/definitions/OrganisationResponse"
                         }
                     },
                     "404": {
-                        "description": "Organisation not found"
+                        "description": "Organization not found"
                     }
                 }
             },
@@ -511,8 +511,8 @@
                 "tags": [
                     "Organisations"
                 ],
-                "summary": "Delete an organisation by ID",
-                "description": "Deletes the organisation with the specified ID.",
+                "summary": "Delete an organization by ID",
+                "description": "Deletes the organization with the specified ID.",
                 "parameters": [
                     {
                         "name": "organisation_id",
@@ -523,10 +523,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Organisation deleted successfully"
+                        "description": "Organization deleted successfully"
                     },
                     "404": {
-                        "description": "Organisation not found"
+                        "description": "Organization not found"
                     }
                 }
             }
@@ -1642,7 +1642,7 @@
             "properties": {
                 "name": {
                     "type": "string",
-                    "description": "The name of the organisation"
+                    "description": "The name of the organization"
                 }
             },
             "required": [
@@ -1654,11 +1654,11 @@
             "properties": {
                 "id": {
                     "type": "integer",
-                    "description": "The unique identifier of the organisation"
+                    "description": "The unique identifier of the organization"
                 },
                 "name": {
                     "type": "string",
-                    "description": "The name of the organisation"
+                    "description": "The name of the organization"
                 }
             }
         },
@@ -1780,7 +1780,7 @@
                 },
                 "organisation_id": {
                     "type": "integer",
-                    "description": "The ID of the organisation associated with the role"
+                    "description": "The ID of the organization associated with the role"
                 }
             },
             "required": [
@@ -1801,7 +1801,7 @@
                 },
                 "organisation_id": {
                     "type": "integer",
-                    "description": "The ID of the organisation associated with the role"
+                    "description": "The ID of the organization associated with the role"
                 }
             }
         },
@@ -1843,7 +1843,7 @@
                 },
                 "organisation_id": {
                     "type": "integer",
-                    "description": "The ID of the organisation associated with the user"
+                    "description": "The ID of the organization associated with the user"
                 },
                 "profile_status_id": {
                     "type": "integer",
@@ -1907,7 +1907,7 @@
                 },
                 "organisation_id": {
                     "type": "integer",
-                    "description": "The ID of the organisation associated with the user"
+                    "description": "The ID of the organization associated with the user"
                 },
                 "profile_status_id": {
                     "type": "integer",
@@ -2029,7 +2029,7 @@
                 },
                 "organisation_id": {
                     "type": "integer",
-                    "description": "The ID of the organisation associated with the voting session"
+                    "description": "The ID of the organization associated with the voting session"
                 }
             },
             "required": [
@@ -2067,7 +2067,7 @@
                 },
                 "organisation_id": {
                     "type": "integer",
-                    "description": "The ID of the organisation associated with the voting session"
+                    "description": "The ID of the organization associated with the voting session"
                 }
             }
         }

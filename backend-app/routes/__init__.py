@@ -2,7 +2,7 @@ def get_all_routes():
     from .country_routes import country_routes
     from .email_routes import email_routes
     from .option_routes import option_routes
-    from .organisation_routes import organisation_routes
+    from .organization_routes import organisation_routes
     from .password_routes import password_routes
     from .profile_status_routes import profile_status_routes
     from .question_routes import question_routes

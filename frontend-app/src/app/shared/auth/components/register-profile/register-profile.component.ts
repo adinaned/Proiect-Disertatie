@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
     selector: 'app-register-account-form',
     imports: [],
     templateUrl: './register-profile.component.html',
-    styleUrls: ['../shared/auth-form.component.css', '../../../components/profile-detail.component.css']
+    styleUrls: ['../shared/auth-form.component.css', './register-profile.component.css']
 })
 export class RegisterProfileComponent {
 

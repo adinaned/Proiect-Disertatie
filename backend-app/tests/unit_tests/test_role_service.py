@@ -1,5 +1,5 @@
 import unittest
-from models import Role, Organisation, db
+from models import Role, Organization, db
 from services.role_service import (
     create_role,
     get_role_by_id,
@@ -25,20 +25,20 @@ class TestRoleService(unittest.TestCase):
         self.session = db.session
 
         Role.metadata.create_all(db.engine)
-        Organisation.metadata.create_all(db.engine)
+        Organization.metadata.create_all(db.engine)
 
-        # Add a test organisation
-        self.test_organisation = Organisation(name="Test Organisation")
+        # Add a test organization
+        self.test_organisation = Organization(name="Test Organization")
         self.session.add(self.test_organisation)
         self.session.commit()
 
     def tearDown(self):
         self.session.query(Role).delete()
-        self.session.query(Organisation).delete()
+        self.session.query(Organization).delete()
         self.session.commit()
 
         Role.metadata.drop_all(db.engine)
-        Organisation.metadata.drop_all(db.engine)
+        Organization.metadata.drop_all(db.engine)
 
         self.app_context.pop()
 

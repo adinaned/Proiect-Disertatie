@@ -1396,7 +1396,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="lqIsUg3tNItgTmAmfuBp-1" value="UserService" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="lqIsUg3tNItgTmAmfuBp-1" value="UserApiService" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="220" y="30" width="170" height="110" as="geometry">
             <mxRectangle x="260" y="40" width="70" height="30" as="alternateBounds" />
           </mxGeometry>

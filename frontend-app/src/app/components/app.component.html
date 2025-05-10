@@ -1,5 +1,24 @@
 <div class="header">
-    Software Voting Machine
+    <div class="left-section">
+        <button (click)="handleHome()" class="home-btn">Home</button>
+    </div>
+
+    <div class="center-section">
+        <h1 class="title">Software Voting Machine</h1>
+    </div>
+
+    <div class="right-section"
+         (mouseenter)="showMenu = true"
+         (mouseleave)="showMenu = false">
+        <div class="user-wrapper">
+            <img (click)="handleProfile()" src="assets/user-icon.png" alt="User" class="user-icon"/>
+            <div class="dropdown" *ngIf="showMenu">
+                <a (click)="handleProfile()" class="view-profile">View profile</a>
+                <a (click)="handleEditProfile()" class="edit-profile">Edit profile</a>
+                <a (click)="handleLogout()" class="logout">Log out</a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="body-container1">
