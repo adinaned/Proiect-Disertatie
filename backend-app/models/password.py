@@ -6,13 +6,13 @@ class Password(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    hashed_password = Column(String(128), index=True)
+    password = Column(String(128), index=True)
     updated_at = Column(Date, index=True)
 
     def to_dict(self):
         return {"id": self.id,
                 "user_id": self.user_id,
-                "hashed_password": self.hashed_password,
+                "password": self.password,
                 "updated_at": self.updated_at}
 
     def save(self):

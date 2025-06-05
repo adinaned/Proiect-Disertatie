@@ -1,11 +1,11 @@
 import unittest
 from models import Organization, db
 from services.organization_service import (
-    create_organisation,
-    get_organisation_by_id,
-    get_all_organisations,
-    update_organisation,
-    delete_organisation
+    create_organization,
+    get_organization_by_id,
+    get_all_organizations,
+    update_organization,
+    delete_organization
 )
 from configs.database import Config
 from flask import Flask
@@ -16,7 +16,7 @@ app.config.from_object(Config)
 db.init_app(app)
 
 
-class TestOrganisationService(unittest.TestCase):
+class TestOrganizationService(unittest.TestCase):
 
     def setUp(self):
         self.app = app
@@ -34,75 +34,75 @@ class TestOrganisationService(unittest.TestCase):
 
         self.app_context.pop()
 
-    def test_create_organisation(self):
+    def test_create_organization(self):
         data = {"name": "Test Organization"}
-        organisation_data = create_organisation(data)
+        organization_data = create_organization(data)
 
-        organization = self.session.query(Organization).filter_by(id=organisation_data["id"]).first()
+        organization = self.session.query(Organization).filter_by(id=organization_data["id"]).first()
         self.assertIsNotNone(organization)
         self.assertEqual(organization.name, "Test Organization")
 
-    def test_create_organisation_invalid_name(self):
+    def test_create_organization_invalid_name(self):
         data = {"name": ""}
         with self.assertRaises(ValueError) as context:
-            create_organisation(data)
+            create_organization(data)
         self.assertEqual(str(context.exception), "The 'name' field is required and must be a non-empty string")
 
-    def test_get_organisation_by_id(self):
+    def test_get_organization_by_id(self):
         organization = Organization(name="Test Organization")
         self.session.add(organization)
         self.session.commit()
 
-        organisation_data = get_organisation_by_id(organization.id)
-        self.assertIsNotNone(organisation_data)
-        self.assertEqual(organisation_data["name"], "Test Organization")
+        organization_data = get_organization_by_id(organization.id)
+        self.assertIsNotNone(organization_data)
+        self.assertEqual(organization_data["name"], "Test Organization")
 
-    def test_get_organisation_by_id_not_found(self):
-        organisation_data = get_organisation_by_id(999)
-        self.assertIsNone(organisation_data)
+    def test_get_organization_by_id_not_found(self):
+        organization_data = get_organization_by_id(999)
+        self.assertIsNone(organization_data)
 
-    def test_get_all_organisations(self):
-        organisation1 = Organization(name="Organization 1")
-        organisation2 = Organization(name="Organization 2")
-        self.session.add_all([organisation1, organisation2])
+    def test_get_all_organizations(self):
+        organization1 = Organization(name="Organization 1")
+        organization2 = Organization(name="Organization 2")
+        self.session.add_all([organization1, organization2])
         self.session.commit()
 
-        organisations = get_all_organisations()
-        self.assertEqual(len(organisations), 2)
+        organizations = get_all_organizations()
+        self.assertEqual(len(organizations), 2)
 
-    def test_update_organisation(self):
+    def test_update_organization(self):
         organization = Organization(name="Old Organization")
         self.session.add(organization)
         self.session.commit()
 
         data = {"name": "Updated Organization"}
-        updated_organisation = update_organisation(organization.id, data)
+        updated_organization = update_organization(organization.id, data)
 
-        self.assertEqual(updated_organisation["name"], "Updated Organization")
+        self.assertEqual(updated_organization["name"], "Updated Organization")
 
-    def test_update_organisation_invalid_name(self):
+    def test_update_organization_invalid_name(self):
         organization = Organization(name="Old Organization")
         self.session.add(organization)
         self.session.commit()
 
         data = {"name": ""}
         with self.assertRaises(ValueError) as context:
-            update_organisation(organization.id, data)
+            update_organization(organization.id, data)
         self.assertEqual(str(context.exception), "The 'name' field must be a non-empty string")
 
-    def test_delete_organisation(self):
+    def test_delete_organization(self):
         organization = Organization(name="Organization to Delete")
         self.session.add(organization)
         self.session.commit()
 
-        response = delete_organisation(organization.id)
+        response = delete_organization(organization.id)
         self.assertEqual(response["message"], "Organization deleted successfully")
 
-        deleted_organisation = self.session.query(Organization).filter_by(id=organization.id).first()
-        self.assertIsNone(deleted_organisation)
+        deleted_organization = self.session.query(Organization).filter_by(id=organization.id).first()
+        self.assertIsNone(deleted_organization)
 
-    def test_delete_organisation_not_found(self):
-        response = delete_organisation(999)
+    def test_delete_organization_not_found(self):
+        response = delete_organization(999)
         self.assertEqual(response["message"], "Organization not found")
 
 

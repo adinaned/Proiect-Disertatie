@@ -37,7 +37,6 @@ class TestOptionService(unittest.TestCase):
     def test_create_option(self):
         data = {
             "name": "Option 1",
-            "question_id": 1,
             "session_id": 1
         }
         option_data = create_option(data)
@@ -45,13 +44,11 @@ class TestOptionService(unittest.TestCase):
         option = self.session.query(Option).filter_by(id=option_data["id"]).first()
         self.assertIsNotNone(option)
         self.assertEqual(option.name, "Option 1")
-        self.assertEqual(option.question_id, 1)
         self.assertEqual(option.session_id, 1)
 
     def test_create_option_invalid_name(self):
         data = {
             "name": "",
-            "question_id": 1,
             "session_id": 1
         }
         with self.assertRaises(ValueError) as context:
@@ -59,7 +56,7 @@ class TestOptionService(unittest.TestCase):
         self.assertEqual(str(context.exception), "The 'name' field is required and must be a non-empty string")
 
     def test_get_option_by_id(self):
-        option = Option(name="Option 1", question_id=1, session_id=1)
+        option = Option(name="Option 1", session_id=1)
         self.session.add(option)
         self.session.commit()
 
@@ -72,8 +69,8 @@ class TestOptionService(unittest.TestCase):
         self.assertIsNone(option_data)
 
     def test_get_all_options(self):
-        option1 = Option(name="Option 1", question_id=1, session_id=1)
-        option2 = Option(name="Option 2", question_id=1, session_id=1)
+        option1 = Option(name="Option 1", session_id=1)
+        option2 = Option(name="Option 2", session_id=1)
         self.session.add_all([option1, option2])
         self.session.commit()
 
@@ -81,7 +78,7 @@ class TestOptionService(unittest.TestCase):
         self.assertEqual(len(options), 2)
 
     def test_update_option(self):
-        option = Option(name="Old Option", question_id=1, session_id=1)
+        option = Option(name="Old Option", session_id=1)
         self.session.add(option)
         self.session.commit()
 
@@ -91,7 +88,7 @@ class TestOptionService(unittest.TestCase):
         self.assertEqual(updated_option["name"], "Updated Option")
 
     def test_update_option_invalid_name(self):
-        option = Option(name="Old Option", question_id=1, session_id=1)
+        option = Option(name="Old Option", session_id=1)
         self.session.add(option)
         self.session.commit()
 
@@ -101,7 +98,7 @@ class TestOptionService(unittest.TestCase):
         self.assertEqual(str(context.exception), "The 'name' field must be a non-empty string")
 
     def test_delete_option(self):
-        option = Option(name="Option to Delete", question_id=1, session_id=1)
+        option = Option(name="Option to Delete", session_id=1)
         self.session.add(option)
         self.session.commit()
 

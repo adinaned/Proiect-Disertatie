@@ -3,11 +3,14 @@ from pydantic import BaseModel
 
 
 class VotingSessionResponse(BaseModel):
+    id: int
     title: str
-    start_time: datetime
-    end_time: datetime
-    role_name: str
-    organisation_id: int
+    question: str
+    start_datetime: datetime
+    end_datetime: datetime
+    role_id: int
+    organization_id: int
+    key_ring: dict | None = None
 
     class Config:
         from_attributes = True

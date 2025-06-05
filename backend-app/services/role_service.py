@@ -10,16 +10,16 @@ def create_role(data):
         raise ValueError("You cannot manually set the ID")
 
     name = data.get("name")
-    organisation_id = data.get("organisation_id")
+    organization_id = data.get("organization_id")
 
     if not name or not isinstance(name, str):
         raise ValueError("The 'name' field is required and must be a non-empty string")
     if len(name) > 100:
         raise ValueError("The 'name' field must not exceed 100 characters")
-    if not organisation_id or not isinstance(organisation_id, int):
-        raise ValueError("The 'organisation_id' field is required and must be an integer")
+    if not organization_id or not isinstance(organization_id, int):
+        raise ValueError("The 'organization_id' field is required and must be an integer")
 
-    role = Role(name=name.strip(), organisation_id=organisation_id)
+    role = Role(name=name.strip(), organization_id=organization_id)
 
     db.session.add(role)
 
@@ -67,11 +67,11 @@ def update_role(role_id, data):
             raise ValueError("The 'name' field must not exceed 100 characters")
         role.name = name.strip()
 
-    if "organisation_id" in data:
-        organisation_id = data["organisation_id"]
-        if not isinstance(organisation_id, int):
-            raise ValueError("The 'organisation_id' field must be an integer")
-        role.organisation_id = organisation_id
+    if "organization_id" in data:
+        organization_id = data["organization_id"]
+        if not isinstance(organization_id, int):
+            raise ValueError("The 'organization_id' field must be an integer")
+        role.organization_id = organization_id
 
     try:
         db.session.commit()

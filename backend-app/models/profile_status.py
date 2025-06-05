@@ -14,6 +14,7 @@ class ProfileStatus(db.Model):
     __tablename__ = "profile_statuses"
 
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, nullable=False, index=True)
     name = Column(Enum(ProfileStatusEnum), index=True, default=ProfileStatusEnum.OPEN)
     updated_at = Column(Date, index=True)
 

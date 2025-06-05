@@ -28,8 +28,8 @@ class TestRoleService(unittest.TestCase):
         Organization.metadata.create_all(db.engine)
 
         # Add a test organization
-        self.test_organisation = Organization(name="Test Organization")
-        self.session.add(self.test_organisation)
+        self.test_organization = Organization(name="Test Organization")
+        self.session.add(self.test_organization)
         self.session.commit()
 
     def tearDown(self):
@@ -45,26 +45,26 @@ class TestRoleService(unittest.TestCase):
     def test_create_role(self):
         data = {
             "name": "Test Role",
-            "organisation_id": self.test_organisation.id
+            "organization_id": self.test_organization.id
         }
         role_data = create_role(data)
 
         role = self.session.query(Role).filter_by(id=role_data["id"]).first()
         self.assertIsNotNone(role)
         self.assertEqual(role.name, "Test Role")
-        self.assertEqual(role.organisation_id, self.test_organisation.id)
+        self.assertEqual(role.organization_id, self.test_organization.id)
 
     def test_create_role_invalid_name(self):
         data = {
             "name": "",
-            "organisation_id": self.test_organisation.id
+            "organization_id": self.test_organization.id
         }
         with self.assertRaises(ValueError) as context:
             create_role(data)
         self.assertEqual(str(context.exception), "The 'name' field is required and must be a non-empty string")
 
     def test_get_role_by_id(self):
-        role = Role(name="Test Role", organisation_id=self.test_organisation.id)
+        role = Role(name="Test Role", organization_id=self.test_organization.id)
         self.session.add(role)
         self.session.commit()
 
@@ -77,8 +77,8 @@ class TestRoleService(unittest.TestCase):
         self.assertIsNone(role_data)
 
     def test_get_all_roles(self):
-        role1 = Role(name="Role 1", organisation_id=self.test_organisation.id)
-        role2 = Role(name="Role 2", organisation_id=self.test_organisation.id)
+        role1 = Role(name="Role 1", organization_id=self.test_organization.id)
+        role2 = Role(name="Role 2", organization_id=self.test_organization.id)
         self.session.add_all([role1, role2])
         self.session.commit()
 
@@ -86,7 +86,7 @@ class TestRoleService(unittest.TestCase):
         self.assertEqual(len(roles), 2)
 
     def test_update_role(self):
-        role = Role(name="Old Role", organisation_id=self.test_organisation.id)
+        role = Role(name="Old Role", organization_id=self.test_organization.id)
         self.session.add(role)
         self.session.commit()
 
@@ -96,7 +96,7 @@ class TestRoleService(unittest.TestCase):
         self.assertEqual(updated_role["name"], "Updated Role")
 
     def test_update_role_invalid_name(self):
-        role = Role(name="Old Role", organisation_id=self.test_organisation.id)
+        role = Role(name="Old Role", organization_id=self.test_organization.id)
         self.session.add(role)
         self.session.commit()
 
@@ -106,7 +106,7 @@ class TestRoleService(unittest.TestCase):
         self.assertEqual(str(context.exception), "The 'name' field must be a non-empty string")
 
     def test_delete_role(self):
-        role = Role(name="Role to Delete", organisation_id=self.test_organisation.id)
+        role = Role(name="Role to Delete", organization_id=self.test_organization.id)
         self.session.add(role)
         self.session.commit()
 

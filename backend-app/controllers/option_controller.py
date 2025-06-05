@@ -1,11 +1,11 @@
 from flask import jsonify, request
-from services import (create_option, get_all_options, get_option_by_id, update_option, delete_option)
+from services import (create_option, get_all_options, get_option_by_id, get_all_options_by_session_id, update_option, delete_option)
 
 
-def create():
+def create(session_id):
     try:
         data = request.get_json()
-        new_option = create_option(data)
+        new_option = create_option(data, session_id)
         return jsonify(new_option), 201
     except ValueError as ve:
         return jsonify({"message": str(ve)}), 400
@@ -19,6 +19,11 @@ def get_by_id(option_id):
         return jsonify(option), 200
     return jsonify({"message": "Option not found"}), 404
 
+def get_by_session_id(session_id):
+    option = get_all_options_by_session_id(session_id)
+    if option:
+        return jsonify(option), 200
+    return jsonify({"message": "Option not found"}), 404
 
 def get_all():
     options = get_all_options()

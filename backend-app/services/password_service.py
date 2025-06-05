@@ -1,6 +1,6 @@
 from models import Password, db
 from schemas.password_schema import PasswordResponse
-
+from datetime import date
 
 def create_password(data):
     if not isinstance(data, dict):
@@ -10,20 +10,19 @@ def create_password(data):
         raise ValueError("You cannot manually set the ID")
 
     user_id = data.get("user_id")
-    hashed_password = data.get("hashed_password")
-    updated_at = data.get("updated_at")
+    password_data = data.get("password")
 
     if not user_id or not isinstance(user_id, int):
         raise ValueError("The 'user_id' field is required and must be an integer")
-    if not hashed_password or not isinstance(hashed_password, str):
-        raise ValueError("The 'hashed_password' field is required and must be a non-empty string")
-    if len(hashed_password) > 128:
-        raise ValueError("The 'hashed_password' field must not exceed 128 characters")
+    if not password_data or not isinstance(password_data, str):
+        raise ValueError("The 'password' field is required and must be a non-empty string")
+    if len(password_data) > 128:
+        raise ValueError("The 'password' field must not exceed 128 characters")
 
     password = Password(
         user_id=user_id,
-        hashed_password=hashed_password.strip(),
-        updated_at=updated_at
+        password=password_data.strip(),
+        updated_at=date.today()
     )
 
     db.session.add(password)
@@ -70,13 +69,13 @@ def update_password(password_id, data):
             raise ValueError("The 'user_id' field must be an integer")
         password.user_id = user_id
 
-    if "hashed_password" in data:
-        hashed_password = data["hashed_password"]
-        if not isinstance(hashed_password, str) or not hashed_password.strip():
-            raise ValueError("The 'hashed_password' field must be a non-empty string")
-        if len(hashed_password) > 128:
-            raise ValueError("The 'hashed_password' field must not exceed 128 characters")
-        password.hashed_password = hashed_password.strip()
+    if "password" in data:
+        password_data = data["password"]
+        if not isinstance(password_data, str) or not password_data.strip():
+            raise ValueError("The 'password' field must be a non-empty string")
+        if len(password_data) > 128:
+            raise ValueError("The 'password' field must not exceed 128 characters")
+        password.password = password_data.strip()
 
     if "updated_at" in data:
         password.updated_at = data["updated_at"]

@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime
-from models import Vote, Question, Option, VotingSession, db
+from models import Vote, Option, VotingSession, db
 from services.vote_service import (
     create_vote,
     get_vote_by_token,
@@ -24,26 +24,22 @@ class TestVoteService(unittest.TestCase):
         self.session = db.session
 
         Vote.metadata.create_all(db.engine)
-        Question.metadata.create_all(db.engine)
         Option.metadata.create_all(db.engine)
         VotingSession.metadata.create_all(db.engine)
 
         # Add test dependencies
         self.test_session = VotingSession(name="Test Session")
-        self.test_question = Question(name="Test Question", voting_session_id=1)
-        self.test_option = Option(name="Test Option", question_id=1)
-        self.session.add_all([self.test_session, self.test_question, self.test_option])
+        self.test_option = Option(name="Test Option")
+        self.session.add_all([self.test_session, self.test_option])
         self.session.commit()
 
     def tearDown(self):
         self.session.query(Vote).delete()
-        self.session.query(Question).delete()
         self.session.query(Option).delete()
         self.session.query(VotingSession).delete()
         self.session.commit()
 
         Vote.metadata.drop_all(db.engine)
-        Question.metadata.drop_all(db.engine)
         Option.metadata.drop_all(db.engine)
         VotingSession.metadata.drop_all(db.engine)
 
@@ -52,7 +48,6 @@ class TestVoteService(unittest.TestCase):
     def test_create_vote(self):
         data = {
             "session_id": self.test_session.id,
-            "question_id": self.test_question.id,
             "option_id": self.test_option.id
         }
         vote_data = create_vote(data)
@@ -60,13 +55,11 @@ class TestVoteService(unittest.TestCase):
         vote = self.session.query(Vote).filter_by(id=vote_data["id"]).first()
         self.assertIsNotNone(vote)
         self.assertEqual(vote.session_id, self.test_session.id)
-        self.assertEqual(vote.question_id, self.test_question.id)
         self.assertEqual(vote.option_id, self.test_option.id)
 
     def test_create_vote_invalid_session(self):
         data = {
             "session_id": 999,
-            "question_id": self.test_question.id,
             "option_id": self.test_option.id
         }
         with self.assertRaises(ValueError) as context:
@@ -76,7 +69,6 @@ class TestVoteService(unittest.TestCase):
     def test_get_vote_by_token(self):
         vote = Vote(
             session_id=self.test_session.id,
-            question_id=self.test_question.id,
             option_id=self.test_option.id,
             token="test-token",
             submission_timestamp=datetime.now()
@@ -95,14 +87,12 @@ class TestVoteService(unittest.TestCase):
     def test_get_all_votes(self):
         vote1 = Vote(
             session_id=self.test_session.id,
-            question_id=self.test_question.id,
             option_id=self.test_option.id,
             token="token1",
             submission_timestamp=datetime.now()
         )
         vote2 = Vote(
             session_id=self.test_session.id,
-            question_id=self.test_question.id,
             option_id=self.test_option.id,
             token="token2",
             submission_timestamp=datetime.now()

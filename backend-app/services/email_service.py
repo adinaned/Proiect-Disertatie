@@ -1,5 +1,8 @@
 import re
 from datetime import date
+
+from flask import jsonify
+
 from models import Email, User, db
 from schemas.email_schema import EmailResponse
 
@@ -15,6 +18,10 @@ def create_email(data):
 
     email_address = data.get("email_address")
     user_id = data.get("user_id")
+
+    existing_email = Email.query.filter_by(email_address=email_address).first()
+    if existing_email:
+        return jsonify({'error': 'Email already in use'}), 409
 
     if not email_address or not isinstance(email_address, str):
         raise ValueError("The 'email_address' field is required and must be a non-empty string")
@@ -47,6 +54,13 @@ def create_email(data):
 
 def get_email_by_id(email_id):
     email = db.session.get(Email, email_id)
+    if not email:
+        return None
+
+    return EmailResponse.model_validate(email).model_dump()
+
+def get_email_by_name(email_address):
+    email = Email.query.filter_by(email_address=email_address).first()
     if not email:
         return None
 

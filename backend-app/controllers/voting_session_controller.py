@@ -1,12 +1,17 @@
 from flask import jsonify, request
-from services import (create_voting_session, get_all_voting_sessions, get_voting_session_by_id, update_voting_session, delete_voting_session)
+from services import (create_voting_session, get_all_voting_sessions, get_voting_session_by_id,
+                      get_ring_by_voting_session, update_voting_session, delete_voting_session)
 
 
 def create():
     try:
         data = request.get_json()
+        start_date = data.get("start_datetime")
+        end_date = data.get("end_datetime")
+        print(f"Start date: {start_date}")
+        print(f"End date: {end_date}")
         new_voting_session = create_voting_session(data)
-        return jsonify(new_voting_session), 201
+        return jsonify(new_voting_session), 200
     except ValueError as ve:
         return jsonify({"message": str(ve)}), 400
     except Exception as e:
@@ -18,6 +23,14 @@ def get_by_id(voting_session_id):
     if voting_session:
         return jsonify(voting_session), 200
     return jsonify({"message": "VotingSession not found"}), 404
+
+
+def get_ring(voting_session_id):
+    voting_session = get_voting_session_by_id(voting_session_id)
+    if not voting_session:
+        return jsonify({"error": "Voting session not found"}), 404
+
+    return get_ring_by_voting_session(voting_session), 201
 
 
 def get_all():

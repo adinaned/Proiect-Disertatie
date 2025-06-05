@@ -1,46 +1,47 @@
 from flask import jsonify, request
-from services import (create_organisation, get_all_organisations, get_organisation_by_id, update_organisation, delete_organisation)
-
+from services import (create_organization, get_all_organizations, get_organization_by_id, update_organization, delete_organization)
+import traceback
 
 def create():
     try:
         data = request.get_json()
-        new_organisation = create_organisation(data)
-        return jsonify(new_organisation), 201
+        traceback.print_exc()
+        new_organization = create_organization(data)
+        return jsonify(new_organization), 201
     except ValueError as ve:
         return jsonify({"message": str(ve)}), 400
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
 
-def get_by_id(organisation_id):
-    organization = get_organisation_by_id(organisation_id)
+def get_by_id(organization_id):
+    organization = get_organization_by_id(organization_id)
     if organization:
         return jsonify(organization), 200
     return jsonify({"message": "Organization not found"}), 404
 
 
 def get_all():
-    organisations = get_all_organisations()
-    if not organisations:
+    organizations = get_all_organizations()
+    if not organizations:
         return jsonify([]), 200
-    return jsonify(organisations), 200
+    return jsonify(organizations), 200
 
 
-def update(organisation_id):
+def update(organization_id):
     try:
         data = request.get_json()
-        updated_organisation = update_organisation(organisation_id, data)
-        return jsonify(updated_organisation), 200
+        updated_organization = update_organization(organization_id, data)
+        return jsonify(updated_organization), 200
     except ValueError as ve:
         return jsonify({"message": str(ve)}), 400
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
 
-def delete(organisation_id):
+def delete(organization_id):
     try:
-        result = delete_organisation(organisation_id)
+        result = delete_organization(organization_id)
         if result.get("message") == "Organization not found":
             return jsonify(result), 404
         return jsonify(result), 200

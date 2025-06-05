@@ -1,29 +1,29 @@
 from flask import Blueprint
 from controllers.organization_controller import *
 
-organisation_routes = Blueprint("organisation_routes", __name__)
+organization_routes = Blueprint("organization_routes", __name__)
 
 
-@organisation_routes.route('/organisations', methods=['POST'])
-def create_new_organisation_endpoint():
+@organization_routes.route('/organizations', methods=['POST'])
+def create_new_organization_endpoint():
     return create()
 
 
-@organisation_routes.route('/organisations', methods=['GET'])
-def get_organisations_endpoint():
+@organization_routes.route('/organizations', methods=['GET'])
+def get_organizations_endpoint():
     return get_all()
 
 
-@organisation_routes.route('/organisations/<int:organisation_id>', methods=['GET'])
-def get_organisation_by_id_endpoint(organisation_id):
-    return get_by_id(organisation_id)
+@organization_routes.route('/organizations/<int:organization_id>', methods=['GET'])
+def get_organization_by_id_endpoint(organization_id):
+    return get_by_id(organization_id)
 
 
-@organisation_routes.route('/organisations/<int:organisation_id>', methods=['PUT'])
-def update_organisation_by_id_endpoint(organisation_id):
-    return update(organisation_id)
+@organization_routes.route('/organizations/<int:organization_id>', methods=['PUT'])
+def update_organization_by_id_endpoint(organization_id):
+    return update(organization_id)
 
 
-@organisation_routes.route('/organisations/<int:organisation_id>', methods=['DELETE'])
-def delete_organisation_endpoint(organisation_id):
-    return delete(organisation_id)
+@organization_routes.route('/organizations/<int:organization_id>', methods=['DELETE'])
+def delete_organization_endpoint(organization_id):
+    return delete(organization_id)

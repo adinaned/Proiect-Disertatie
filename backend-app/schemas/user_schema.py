@@ -12,8 +12,7 @@ class UserResponse(BaseModel):
     address: str
     national_id: int
     role_id: int
-    organisation_id: int
-    profile_status_id: int
+    organization_id: int
 
     class Config:
         from_attributes = True

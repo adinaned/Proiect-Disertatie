@@ -2,7 +2,7 @@ from models import Option, db
 from schemas.option_schema import OptionResponse
 
 
-def create_option(data):
+def create_option(data, session_id):
     if not isinstance(data, dict):
         raise ValueError("Payload must be a JSON object")
 
@@ -10,21 +10,14 @@ def create_option(data):
         raise ValueError("You cannot manually set the ID")
 
     name = data.get("name")
-    question_id = data.get("question_id")
-    session_id = data.get("session_id")
 
     if not name or not isinstance(name, str):
         raise ValueError("The 'name' field is required and must be a non-empty string")
     if len(name) > 250:
         raise ValueError("The 'name' field must not exceed 250 characters")
-    if not question_id or not isinstance(question_id, int):
-        raise ValueError("The 'question_id' field is required and must be an integer")
-    if not session_id or not isinstance(session_id, int):
-        raise ValueError("The 'session_id' field is required and must be an integer")
 
     option = Option(
         name=name.strip(),
-        question_id=question_id,
         session_id=session_id
     )
 
@@ -46,6 +39,12 @@ def get_option_by_id(option_id):
 
     return OptionResponse.model_validate(option).model_dump()
 
+def get_all_options_by_session_id(session_id):
+    options = Option.query.filter_by(session_id=session_id).all()
+    if not options:
+        return []
+
+    return [OptionResponse.model_validate(option).model_dump() for option in options]
 
 def get_all_options():
     options = Option.query.all()
@@ -73,12 +72,6 @@ def update_option(option_id, data):
         if len(name) > 250:
             raise ValueError("The 'name' field must not exceed 250 characters")
         option.name = name.strip()
-
-    if "question_id" in data:
-        question_id = data["question_id"]
-        if not isinstance(question_id, int):
-            raise ValueError("The 'question_id' field must be an integer")
-        option.question_id = question_id
 
     if "session_id" in data:
         session_id = data["session_id"]

@@ -1,0 +1,54 @@
+<div class="vote-container1">
+    <h2 class="session-title">{{ session?.title || 'Voting Session' }}</h2>
+    <div class="vote-container2">
+        <div class="question-box">
+            <p class="question">{{ session?.question }}</p>
+
+            <div class="options-list">
+                <div class="option" *ngFor="let option of session?.options">
+                    <input
+                            type="radio"
+                            name="voteOption"
+                            [id]="'option-' + option.id"
+                            [value]="option.id"
+                            (change)="selectOption(option)"
+                            [checked]="selectedOption?.id === option.id"
+                    />
+                    <label [for]="'option-' + option.id">{{ option.name }}</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-buttons">
+            <button class="submit-btn" (click)="openPopup()">Submit</button>
+            <button class="cancel-btn" (click)="backToHomepage()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="overlay" *ngIf="popupType === 'confirm'">
+    <div class="popup-box1">
+        <div class="popup-box2">
+            <p>We are about to submit your vote. Are you sure about your option?</p>
+            <div class="popup-buttons">
+                <button (click)="submitVote()">Yes</button>
+                <button (click)="closePopup()">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="overlay result" *ngIf="popupType === 'result'">
+    <div class="popup-box1">
+        <div class="popup-box2">
+            <p>Your vote was registered!</p>
+            <p>Make sure to copy your personal access token now as you will not be able to see this again.</p>
+            <p>Token: abcdefghijklmnopwrstuvwxyz.</p>
+            <div class="popup-buttons">
+                <button (click)="closePopup()">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>

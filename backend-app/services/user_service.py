@@ -17,8 +17,7 @@ def create_user(data):
     address = data.get("address")
     national_id = data.get("national_id")
     role_id = data.get("role_id")
-    organisation_id = data.get("organisation_id")
-    profile_status_id = data.get("profile_status_id")
+    organization_id = data.get("organization_id")
     created_at = data.get("created_at")
 
     if not first_name or not isinstance(first_name, str):
@@ -35,8 +34,7 @@ def create_user(data):
         address=address.strip() if address else None,
         national_id=national_id,
         role_id=role_id,
-        organisation_id=organisation_id,
-        profile_status_id=profile_status_id,
+        organization_id=organization_id,
         created_at=created_at
     )
 
@@ -99,11 +97,8 @@ def update_user(user_id, data):
     if "role_id" in data:
         user.role_id = data["role_id"]
 
-    if "organisation_id" in data:
-        user.organisation_id = data["organisation_id"]
-
-    if "profile_status_id" in data:
-        user.profile_status_id = data["profile_status_id"]
+    if "organization_id" in data:
+        user.organization_id = data["organization_id"]
 
     try:
         db.session.commit()

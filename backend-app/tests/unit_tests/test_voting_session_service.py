@@ -30,9 +30,9 @@ class TestVotingSessionService(unittest.TestCase):
         Organization.metadata.create_all(db.engine)
 
         # Add test dependencies
-        self.test_role = Role(name="Test Role", organisation_id=1)
-        self.test_organisation = Organization(name="Test Organization")
-        self.session.add_all([self.test_role, self.test_organisation])
+        self.test_role = Role(name="Test Role", organization_id=1)
+        self.test_organization = Organization(name="Test Organization")
+        self.session.add_all([self.test_role, self.test_organization])
         self.session.commit()
 
     def tearDown(self):
@@ -50,11 +50,10 @@ class TestVotingSessionService(unittest.TestCase):
     def test_create_voting_session(self):
         data = {
             "title": "Test Voting Session",
-            "description": "This is a test voting session",
             "start_time": datetime.utcnow(),
             "end_time": datetime.utcnow() + timedelta(days=1),
             "role_id": self.test_role.id,
-            "organisation_id": self.test_organisation.id
+            "organization_id": self.test_organization.id
         }
         voting_session_data = create_voting_session(data)
 
@@ -63,7 +62,7 @@ class TestVotingSessionService(unittest.TestCase):
         self.assertEqual(voting_session.title, "Test Voting Session")
 
     def test_create_voting_session_invalid_title(self):
-        data = {"title": "", "description": "Invalid title"}
+        data = {"title": "Invalid title"}
         with self.assertRaises(ValueError) as context:
             create_voting_session(data)
         self.assertEqual(str(context.exception), "The 'title' field is required and must be a non-empty string")
@@ -71,10 +70,11 @@ class TestVotingSessionService(unittest.TestCase):
     def test_get_voting_session_by_id(self):
         voting_session = VotingSession(
             title="Test Voting Session",
+            question="What is your opinion?",
             start_time=datetime.utcnow(),
             end_time=datetime.utcnow() + timedelta(days=1),
             role_id=self.test_role.id,
-            organisation_id=self.test_organisation.id
+            organization_id=self.test_organization.id
         )
         self.session.add(voting_session)
         self.session.commit()
@@ -90,17 +90,19 @@ class TestVotingSessionService(unittest.TestCase):
     def test_get_all_voting_sessions(self):
         voting_session1 = VotingSession(
             title="Session 1",
+            question="What is your opinion on Session 1?",
             start_time=datetime.utcnow(),
             end_time=datetime.utcnow() + timedelta(days=1),
             role_id=self.test_role.id,
-            organisation_id=self.test_organisation.id
+            organization_id=self.test_organization.id
         )
         voting_session2 = VotingSession(
             title="Session 2",
+            question="What is your opinion on Session 2?",
             start_time=datetime.utcnow(),
             end_time=datetime.utcnow() + timedelta(days=1),
             role_id=self.test_role.id,
-            organisation_id=self.test_organisation.id
+            organization_id=self.test_organization.id
         )
         self.session.add_all([voting_session1, voting_session2])
         self.session.commit()
@@ -111,10 +113,11 @@ class TestVotingSessionService(unittest.TestCase):
     def test_update_voting_session(self):
         voting_session = VotingSession(
             title="Old Title",
+            question="What is your opinion?",
             start_time=datetime.utcnow(),
             end_time=datetime.utcnow() + timedelta(days=1),
             role_id=self.test_role.id,
-            organisation_id=self.test_organisation.id
+            organization_id=self.test_organization.id
         )
         self.session.add(voting_session)
         self.session.commit()
@@ -127,10 +130,11 @@ class TestVotingSessionService(unittest.TestCase):
     def test_update_voting_session_invalid_title(self):
         voting_session = VotingSession(
             title="Old Title",
+            question="What is your opinion?",
             start_time=datetime.utcnow(),
             end_time=datetime.utcnow() + timedelta(days=1),
             role_id=self.test_role.id,
-            organisation_id=self.test_organisation.id
+            organization_id=self.test_organization.id
         )
         self.session.add(voting_session)
         self.session.commit()
@@ -143,10 +147,11 @@ class TestVotingSessionService(unittest.TestCase):
     def test_delete_voting_session(self):
         voting_session = VotingSession(
             title="Session to Delete",
+            question="What is your opinion?",
             start_time=datetime.utcnow(),
             end_time=datetime.utcnow() + timedelta(days=1),
             role_id=self.test_role.id,
-            organisation_id=self.test_organisation.id
+            organization_id=self.test_organization.id
         )
         self.session.add(voting_session)
         self.session.commit()

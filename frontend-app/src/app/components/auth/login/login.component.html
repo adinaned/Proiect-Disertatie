@@ -1,0 +1,13 @@
+<div class="auth-box">
+    <h2>Log In</h2>
+    <div class="toggle-buttons">
+        <button class="active">Log In</button>
+        <button (click)="handleRegister()">Register</button>
+    </div>
+    <form>
+        <input type="email" name="email" [(ngModel)]="email" placeholder="Email" required>
+        <input type="password" name="password" [(ngModel)]="password" placeholder="Password" required>
+        <a (click)="handleForgotPassword()">Forgot your password?</a>
+        <button type="submit" (click)="handleLogin()">Submit</button>
+    </form>
+</div>

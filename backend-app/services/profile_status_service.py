@@ -10,6 +10,7 @@ def create_profile_status(data):
         raise ValueError("You cannot manually set the ID")
 
     name = data.get("name")
+    user_id = data.get("user_id")
     updated_at = data.get("updated_at")
 
     if not name or name not in ProfileStatus.__table__.c.name.type.enums:
@@ -17,6 +18,7 @@ def create_profile_status(data):
 
     profile_status = ProfileStatus(
         name=name,
+        user_id=user_id,
         updated_at=updated_at
     )
 

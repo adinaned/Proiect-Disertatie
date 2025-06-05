@@ -1,0 +1,40 @@
+<div class="container1">
+    <h2>Voting sessions</h2>
+    <div class="container2">
+        <div class="session" *ngFor="let session of sessions; let i = index">
+            <div class="header">
+                <p class="status" [ngClass]="getStatusClass(session.status)">
+                    {{session.title}} (Status: <span>{{ session.status }}</span>)
+                </p>
+                <div class="footer">
+                    <span class="time-remaining">{{ session.time_remaining }}</span>
+                    <button
+                            *ngIf="!isAdmin"
+                            class="vote-btn"
+                            [ngClass]="getButtonClass(session)"
+                            [disabled]="isButtonDisabled(session)"
+                            (click)="handleAction(session)"
+                    >
+                        {{ getButtonLabel(session) }}
+                    </button>
+
+                    <button
+                            *ngIf="isAdmin"
+                            class="delete-btn"
+                            (click)="deleteSession(session.id)"
+                            title="Delete session"
+                    >
+                    </button>
+                </div>
+            </div>
+
+            <div class="question-box" [ngClass]="{ 'submitted-box': session.status === 'vote submitted' }">
+                <p>{{ session.question }}</p>
+<!--                <p class="stats-link" *ngIf="session.status === 'vote submitted'">-->
+<!--                    Go to <a [href]="session.stats_url" target="_blank">{{ session.stats_url }}</a> to see this-->
+<!--                    session’s statistics-->
+<!--                </p>-->
+            </div>
+        </div>
+    </div>
+</div>

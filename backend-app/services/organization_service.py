@@ -1,8 +1,8 @@
 from models import Organization, db
-from schemas.organization_schema import OrganisationResponse
+from schemas.organization_schema import OrganizationResponse
 
 
-def create_organisation(data):
+def create_organization(data):
     if not isinstance(data, dict):
         raise ValueError("Payload must be a JSON object")
 
@@ -25,33 +25,33 @@ def create_organisation(data):
         db.session.rollback()
         raise e
 
-    return OrganisationResponse.model_validate(organization).model_dump()
+    return OrganizationResponse.model_validate(organization).model_dump()
 
 
-def get_organisation_by_id(organisation_id):
-    organization = db.session.get(Organization, organisation_id)
+def get_organization_by_id(organization_id):
+    organization = db.session.get(Organization, organization_id)
     if not organization:
         return None
 
-    return OrganisationResponse.model_validate(organization).model_dump()
+    return OrganizationResponse.model_validate(organization).model_dump()
 
 
-def get_all_organisations():
-    organisations = Organization.query.all()
-    if not organisations:
+def get_all_organizations():
+    organizations = Organization.query.all()
+    if not organizations:
         return []
 
-    return [OrganisationResponse.model_validate(org).model_dump() for org in organisations]
+    return [OrganizationResponse.model_validate(org).model_dump() for org in organizations]
 
 
-def update_organisation(organisation_id, data):
+def update_organization(organization_id, data):
     if not isinstance(data, dict):
         raise ValueError("Payload must be a non-empty dictionary")
 
     if "id" in data:
         raise ValueError("You cannot modify the ID")
 
-    organization = db.session.get(Organization, organisation_id)
+    organization = db.session.get(Organization, organization_id)
     if not organization:
         raise ValueError("Organization not found")
 
@@ -69,11 +69,11 @@ def update_organisation(organisation_id, data):
         db.session.rollback()
         raise e
 
-    return OrganisationResponse.model_validate(organization).model_dump()
+    return OrganizationResponse.model_validate(organization).model_dump()
 
 
-def delete_organisation(organisation_id):
-    organization = db.session.get(Organization, organisation_id)
+def delete_organization(organization_id):
+    organization = db.session.get(Organization, organization_id)
     if not organization:
         return {"message": "Organization not found"}
 

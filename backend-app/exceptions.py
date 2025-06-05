@@ -1,0 +1,2 @@
+class PublicKeyAlreadyExists(Exception):
+    pass

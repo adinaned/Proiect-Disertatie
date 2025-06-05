@@ -45,20 +45,20 @@ class TestPasswordService(unittest.TestCase):
     def test_create_password(self):
         data = {
             "user_id": self.test_user.id,
-            "hashed_password": "hashed_password_123",
+            "password": "password_123",
             "updated_at": date.today()
         }
         password_data = create_password(data)
 
         password = self.session.query(Password).filter_by(id=password_data["id"]).first()
         self.assertIsNotNone(password)
-        self.assertEqual(password.hashed_password, "hashed_password_123")
+        self.assertEqual(password.password, "password_123")
         self.assertEqual(password.user_id, self.test_user.id)
 
     def test_create_password_invalid_user_id(self):
         data = {
             "user_id": "invalid",
-            "hashed_password": "hashed_password_123",
+            "password": "password_123",
             "updated_at": date.today()
         }
         with self.assertRaises(ValueError) as context:
@@ -68,7 +68,7 @@ class TestPasswordService(unittest.TestCase):
     def test_get_password_by_user_id(self):
         password = Password(
             user_id=self.test_user.id,
-            hashed_password="hashed_password_123",
+            password="password_123",
             updated_at=date.today()
         )
         self.session.add(password)
@@ -76,7 +76,7 @@ class TestPasswordService(unittest.TestCase):
 
         password_data = get_password_by_user_id(self.test_user.id)
         self.assertIsNotNone(password_data)
-        self.assertEqual(password_data["hashed_password"], "hashed_password_123")
+        self.assertEqual(password_data["password"], "password_123")
 
     def test_get_password_by_user_id_not_found(self):
         with self.assertRaises(ValueError) as context:
@@ -86,35 +86,35 @@ class TestPasswordService(unittest.TestCase):
     def test_update_password(self):
         password = Password(
             user_id=self.test_user.id,
-            hashed_password="old_password",
+            password="old_password",
             updated_at=date.today()
         )
         self.session.add(password)
         self.session.commit()
 
-        data = {"hashed_password": "new_password"}
+        data = {"password": "new_password"}
         updated_password = update_password(password.id, data)
 
-        self.assertEqual(updated_password["hashed_password"], "new_password")
+        self.assertEqual(updated_password["password"], "new_password")
 
-    def test_update_password_invalid_hashed_password(self):
+    def test_update_password_invalid_password(self):
         password = Password(
             user_id=self.test_user.id,
-            hashed_password="old_password",
+            password="old_password",
             updated_at=date.today()
         )
         self.session.add(password)
         self.session.commit()
 
-        data = {"hashed_password": ""}
+        data = {"password": ""}
         with self.assertRaises(ValueError) as context:
             update_password(password.id, data)
-        self.assertEqual(str(context.exception), "The 'hashed_password' field must be a non-empty string")
+        self.assertEqual(str(context.exception), "The 'password' field must be a non-empty string")
 
     def test_delete_password(self):
         password = Password(
             user_id=self.test_user.id,
-            hashed_password="password_to_delete",
+            password="password_to_delete",
             updated_at=date.today()
         )
         self.session.add(password)

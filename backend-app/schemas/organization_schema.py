@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class OrganisationResponse(BaseModel):
+class OrganizationResponse(BaseModel):
     id: int
     name: str
 

@@ -15,15 +15,13 @@ class User(db.Model):
     address = Column(String(256))
     national_id = Column(Integer)
     role_id = Column(Integer, ForeignKey("roles.id"))
-    organisation_id = Column(Integer, ForeignKey("organisations.id"))
-    profile_status_id = Column(Integer, ForeignKey("profile_statuses.id"))
+    organization_id = Column(Integer, ForeignKey("organizations.id"))
     created_at = Column(Date)
 
     email = relationship("Email")
     country = relationship("Country")
     role = relationship("Role")
     organization = relationship("Organization")
-    profile_status = relationship("ProfileStatus")
 
     def to_dict(self):
         return {"id": self.id,
@@ -35,8 +33,7 @@ class User(db.Model):
                 "address": self.address,
                 "national_id": self.national_id,
                 "role_id": self.role_id,
-                "organisation_id": self.organisation_id,
-                "profile_status_id": self.profile_status_id,
+                "organization_id": self.organization_id,
                 "created_at": self.created_at}
 
     def save(self):

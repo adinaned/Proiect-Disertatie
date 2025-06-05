@@ -262,6 +262,64 @@
                 }
             }
         },
+        "/emails/{email_address}": {
+            "get": {
+                "tags": [
+                    "Emails"
+                ],
+                "summary": "Get an email by email address",
+                "description": "Retrieves the email with the specified email address.",
+                "parameters": [
+                    {
+                        "name": "email_address",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Email found",
+                        "schema": {
+                            "$ref": "#/definitions/EmailResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Email not found"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Login"
+                ],
+                "summary": "Creates a JWT token for a user",
+                "description": "Creates a JWT token for a user",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "login",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LoginCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Login successful",
+                        "schema": {
+                            "$ref": "#/definitions/LoginResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Couldn't create a token, invalid credentials"
+                    }
+                }
+            }
+        },
         "/options": {
             "post": {
                 "tags": [
@@ -398,10 +456,38 @@
                 }
             }
         },
-        "/organisations": {
+        "/options/session/{session_id}": {
+            "get": {
+                "tags": [
+                    "Options"
+                ],
+                "summary": "Get an option by session ID",
+                "description": "Retrieves the option with the specified session ID.",
+                "parameters": [
+                    {
+                        "name": "session_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Option found",
+                        "schema": {
+                            "$ref": "#/definitions/OptionResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Option not found"
+                    }
+                }
+            }
+        },
+        "/organizations": {
             "post": {
                 "tags": [
-                    "Organisations"
+                    "Organizations"
                 ],
                 "summary": "Create a new organization",
                 "description": "Creates a new organization with the given data.",
@@ -411,7 +497,7 @@
                         "name": "organization",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/OrganisationCreate"
+                            "$ref": "#/definitions/OrganizationCreate"
                         }
                     }
                 ],
@@ -419,7 +505,7 @@
                     "201": {
                         "description": "Organization created successfully",
                         "schema": {
-                            "$ref": "#/definitions/OrganisationResponse"
+                            "$ref": "#/definitions/OrganizationResponse"
                         }
                     },
                     "400": {
@@ -429,33 +515,33 @@
             },
             "get": {
                 "tags": [
-                    "Organisations"
+                    "Organizations"
                 ],
-                "summary": "Get all organisations",
-                "description": "Returns a list of all organisations in the database.",
+                "summary": "Get all organizations",
+                "description": "Returns a list of all organizations in the database.",
                 "responses": {
                     "200": {
-                        "description": "A list of organisations",
+                        "description": "A list of organizations",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/OrganisationResponse"
+                                "$ref": "#/definitions/OrganizationResponse"
                             }
                         }
                     }
                 }
             }
         },
-        "/organisations/{organisation_id}": {
+        "/organizations/{organization_id}": {
             "get": {
                 "tags": [
-                    "Organisations"
+                    "Organizations"
                 ],
                 "summary": "Get an organization by ID",
                 "description": "Retrieves the organization with the specified ID.",
                 "parameters": [
                     {
-                        "name": "organisation_id",
+                        "name": "organization_id",
                         "in": "path",
                         "required": true,
                         "type": "integer"
@@ -465,7 +551,7 @@
                     "200": {
                         "description": "Organization found",
                         "schema": {
-                            "$ref": "#/definitions/OrganisationResponse"
+                            "$ref": "#/definitions/OrganizationResponse"
                         }
                     },
                     "404": {
@@ -475,13 +561,13 @@
             },
             "put": {
                 "tags": [
-                    "Organisations"
+                    "Organizations"
                 ],
                 "summary": "Update an organization by ID",
                 "description": "Updates the organization with the given ID using the provided data.",
                 "parameters": [
                     {
-                        "name": "organisation_id",
+                        "name": "organization_id",
                         "in": "path",
                         "required": true,
                         "type": "integer"
@@ -491,7 +577,7 @@
                         "name": "organization",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/OrganisationCreate"
+                            "$ref": "#/definitions/OrganizationCreate"
                         }
                     }
                 ],
@@ -499,7 +585,7 @@
                     "200": {
                         "description": "Organization updated successfully",
                         "schema": {
-                            "$ref": "#/definitions/OrganisationResponse"
+                            "$ref": "#/definitions/OrganizationResponse"
                         }
                     },
                     "404": {
@@ -509,13 +595,13 @@
             },
             "delete": {
                 "tags": [
-                    "Organisations"
+                    "Organizations"
                 ],
                 "summary": "Delete an organization by ID",
                 "description": "Deletes the organization with the specified ID.",
                 "parameters": [
                     {
-                        "name": "organisation_id",
+                        "name": "organization_id",
                         "in": "path",
                         "required": true,
                         "type": "integer"
@@ -775,139 +861,6 @@
                     },
                     "404": {
                         "description": "Profile status not found"
-                    }
-                }
-            }
-        },
-        "/questions": {
-            "post": {
-                "tags": [
-                    "Questions"
-                ],
-                "summary": "Create a new question",
-                "description": "Creates a new question with the given data.",
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "question",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/QuestionCreate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Question created successfully",
-                        "schema": {
-                            "$ref": "#/definitions/QuestionResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    }
-                }
-            },
-            "get": {
-                "tags": [
-                    "Questions"
-                ],
-                "summary": "Get all questions",
-                "description": "Returns a list of all questions in the database.",
-                "responses": {
-                    "200": {
-                        "description": "A list of questions",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/QuestionResponse"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/questions/{question_id}": {
-            "get": {
-                "tags": [
-                    "Questions"
-                ],
-                "summary": "Get a question by ID",
-                "description": "Retrieves the question with the specified ID.",
-                "parameters": [
-                    {
-                        "name": "question_id",
-                        "in": "path",
-                        "required": true,
-                        "type": "integer"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Question found",
-                        "schema": {
-                            "$ref": "#/definitions/QuestionResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Question not found"
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Questions"
-                ],
-                "summary": "Update a question by ID",
-                "description": "Updates the question with the given ID using the provided data.",
-                "parameters": [
-                    {
-                        "name": "question_id",
-                        "in": "path",
-                        "required": true,
-                        "type": "integer"
-                    },
-                    {
-                        "in": "body",
-                        "name": "question",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/QuestionCreate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Question updated successfully",
-                        "schema": {
-                            "$ref": "#/definitions/QuestionResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Question not found"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Questions"
-                ],
-                "summary": "Delete a question by ID",
-                "description": "Deletes the question with the specified ID.",
-                "parameters": [
-                    {
-                        "name": "question_id",
-                        "in": "path",
-                        "required": true,
-                        "type": "integer"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Question deleted successfully"
-                    },
-                    "404": {
-                        "description": "Question not found"
                     }
                 }
             }
@@ -1594,16 +1547,38 @@
                 }
             }
         },
+        "LoginCreate": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "description": "The user's email address"
+                },
+                "password": {
+                    "type": "string",
+                    "description": "User's hashed password"
+                }
+            },
+            "required": [
+                "email",
+                "password"
+            ]
+        },
+        "LoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string",
+                    "description": "The unique identifier token for the login session"
+                }
+            }
+        },
         "OptionCreate": {
             "type": "object",
             "properties": {
                 "name": {
                     "type": "string",
                     "description": "The name of the option"
-                },
-                "question_id": {
-                    "type": "integer",
-                    "description": "The ID of the question associated with the option"
                 },
                 "session_id": {
                     "type": "integer",
@@ -1612,7 +1587,6 @@
             },
             "required": [
                 "name",
-                "question_id",
                 "session_id"
             ]
         },
@@ -1627,17 +1601,13 @@
                     "type": "string",
                     "description": "The name of the option"
                 },
-                "question_id": {
-                    "type": "integer",
-                    "description": "The ID of the question associated with the option"
-                },
                 "session_id": {
                     "type": "integer",
                     "description": "The ID of the session associated with the option"
                 }
             }
         },
-        "OrganisationCreate": {
+        "OrganizationCreate": {
             "type": "object",
             "properties": {
                 "name": {
@@ -1649,7 +1619,7 @@
                 "name"
             ]
         },
-        "OrganisationResponse": {
+        "OrganizationResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -1669,14 +1639,14 @@
                     "type": "integer",
                     "description": "The ID of the user"
                 },
-                "hashed_password": {
+                "password": {
                     "type": "string",
                     "description": "The hashed password"
                 }
             },
             "required": [
                 "user_id",
-                "hashed_password"
+                "password"
             ]
         },
         "PasswordResponse": {
@@ -1690,7 +1660,7 @@
                     "type": "integer",
                     "description": "The ID of the user"
                 },
-                "hashed_password": {
+                "password": {
                     "type": "string",
                     "description": "The hashed password"
                 },
@@ -1707,6 +1677,10 @@
                 "name": {
                     "type": "string",
                     "description": "The status of the profile"
+                },
+                "user_id": {
+                    "type": "integer",
+                    "description": "The ID of the user associated with the profile status"
                 },
                 "updated_at": {
                     "type": "string",
@@ -1730,44 +1704,14 @@
                     "type": "string",
                     "description": "The status of the profile"
                 },
+                "user_id": {
+                    "type": "integer",
+                    "description": "The ID of the user associated with the profile status"
+                },
                 "updated_at": {
                     "type": "string",
                     "format": "date",
                     "description": "The date the profile status was last updated"
-                }
-            }
-        },
-        "QuestionCreate": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "description": "The name of the question"
-                },
-                "voting_session_id": {
-                    "type": "integer",
-                    "description": "The ID of the voting session associated with the question"
-                }
-            },
-            "required": [
-                "name",
-                "voting_session_id"
-            ]
-        },
-        "QuestionResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer",
-                    "description": "The unique identifier of the question"
-                },
-                "name": {
-                    "type": "string",
-                    "description": "The name of the question"
-                },
-                "voting_session_id": {
-                    "type": "integer",
-                    "description": "The ID of the voting session associated with the question"
                 }
             }
         },
@@ -1778,7 +1722,7 @@
                     "type": "string",
                     "description": "The name of the role"
                 },
-                "organisation_id": {
+                "organization_id": {
                     "type": "integer",
                     "description": "The ID of the organization associated with the role"
                 }
@@ -1799,7 +1743,7 @@
                     "type": "string",
                     "description": "The name of the role"
                 },
-                "organisation_id": {
+                "organization_id": {
                     "type": "integer",
                     "description": "The ID of the organization associated with the role"
                 }
@@ -1841,7 +1785,7 @@
                     "type": "integer",
                     "description": "The ID of the role associated with the user"
                 },
-                "organisation_id": {
+                "organization_id": {
                     "type": "integer",
                     "description": "The ID of the organization associated with the user"
                 },
@@ -1861,7 +1805,7 @@
                 "date_of_birth",
                 "country_id",
                 "role_id",
-                "organisation_id",
+                "organization_id",
                 "profile_status_id"
             ]
         },
@@ -1905,7 +1849,7 @@
                     "type": "integer",
                     "description": "The ID of the role associated with the user"
                 },
-                "organisation_id": {
+                "organization_id": {
                     "type": "integer",
                     "description": "The ID of the organization associated with the user"
                 },
@@ -1927,10 +1871,6 @@
                     "type": "integer",
                     "description": "The ID of the voting session"
                 },
-                "question_id": {
-                    "type": "integer",
-                    "description": "The ID of the question"
-                },
                 "option_id": {
                     "type": "integer",
                     "description": "The ID of the option"
@@ -1938,7 +1878,6 @@
             },
             "required": [
                 "session_id",
-                "question_id",
                 "option_id"
             ]
         },
@@ -1952,10 +1891,6 @@
                 "session_id": {
                     "type": "integer",
                     "description": "The ID of the voting session"
-                },
-                "question_id": {
-                    "type": "integer",
-                    "description": "The ID of the question"
                 },
                 "option_id": {
                     "type": "integer",
@@ -2013,12 +1948,16 @@
                     "type": "string",
                     "description": "The title of the voting session"
                 },
-                "start_time": {
+                "question": {
+                    "type": "string",
+                    "description": "The question being voted on in the session"
+                },
+                "start_datetime": {
                     "type": "string",
                     "format": "date-time",
                     "description": "The start time of the voting session"
                 },
-                "end_time": {
+                "end_datetime": {
                     "type": "string",
                     "format": "date-time",
                     "description": "The end time of the voting session"
@@ -2027,17 +1966,17 @@
                     "type": "integer",
                     "description": "The ID of the role associated with the voting session"
                 },
-                "organisation_id": {
+                "organization_id": {
                     "type": "integer",
                     "description": "The ID of the organization associated with the voting session"
                 }
             },
             "required": [
                 "title",
-                "start_time",
-                "end_time",
+                "start_datetime",
+                "end_datetime",
                 "role_id",
-                "organisation_id"
+                "organization_id"
             ]
         },
         "VotingSessionResponse": {
@@ -2051,12 +1990,16 @@
                     "type": "string",
                     "description": "The title of the voting session"
                 },
-                "start_time": {
+                "question": {
+                    "type": "string",
+                    "description": "The question being voted on in the session"
+                },
+                "start_datetime": {
                     "type": "string",
                     "format": "date-time",
                     "description": "The start time of the voting session"
                 },
-                "end_time": {
+                "end_datetime": {
                     "type": "string",
                     "format": "date-time",
                     "description": "The end time of the voting session"
@@ -2065,7 +2008,7 @@
                     "type": "integer",
                     "description": "The ID of the role associated with the voting session"
                 },
-                "organisation_id": {
+                "organization_id": {
                     "type": "integer",
                     "description": "The ID of the organization associated with the voting session"
                 }

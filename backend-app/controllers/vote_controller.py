@@ -1,6 +1,6 @@
 from flask import jsonify, request
 from services import (create_vote, get_all_votes, get_vote_by_token)
-
+import traceback
 
 def create():
     try:
@@ -8,8 +8,10 @@ def create():
         new_vote = create_vote(data)
         return jsonify(new_vote), 201
     except ValueError as ve:
+        traceback.print_exc()
         return jsonify({"message": str(ve)}), 400
     except Exception as e:
+        traceback.print_exc()
         return jsonify({"message": str(e)}), 500
 
 

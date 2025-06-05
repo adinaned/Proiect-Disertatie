@@ -1,0 +1,56 @@
+<div class="container1">
+    <h2>Create a voting session</h2>
+    <div class="voting-box">
+        <form (ngSubmit)="onSubmit()">
+            <input type="text" [(ngModel)]="title" name="title" placeholder="Voting session title*" required/>
+
+            <div class="date-row">
+                <div class="date-item">
+                    <label for="startDate">Start datetime</label>
+                    <input id="startDate" type="datetime-local" [(ngModel)]="startDate" name="startDate" required />
+                </div>
+
+                <div class="date-item">
+                    <label for="endDate">End datetime</label>
+                    <input id="endDate" type="datetime-local" [(ngModel)]="endDate" name="endDate" required />
+                </div>
+            </div>
+
+            <input type="text" [(ngModel)]="question" name="question" placeholder="Voting session question" required/>
+
+            <label class="section-label">Options</label>
+            <div class="answer-options">
+                <div *ngFor="let option of options; let i = index" class="option-row">
+                    <input
+                            type="text"
+                            [(ngModel)]="option.value"
+                            [name]="'option' + i"
+                            placeholder="Option {{ i + 1 }}"
+                            required
+                            [ngModelOptions]="{ standalone: true }"
+                    />
+                    <button type="button" (click)="removeOption(i)">✕</button>
+                </div>
+                <button type="button" class="add-option-btn" (click)="addOption()">+ Add option</button>
+            </div>
+
+
+            <div class="row">
+                <select [(ngModel)]="organizationId" name="organization" required>
+                    <option [ngValue]="null" disabled selected>Organization*</option>
+                    <option *ngFor="let org of organizations" [value]="org.id">{{ org.name }}</option>
+                </select>
+
+                <select [(ngModel)]="roleId" name="role" required>
+                    <option [ngValue]="null" disabled hidden>Role*</option>
+                    <option *ngFor="let role of roles" [ngValue]="role.id">{{ role.name }}</option>
+                </select>
+            </div>
+
+            <div class="buttons">
+                <button type="submit">Submit</button>
+                <button type="button" (click)="onCancel()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

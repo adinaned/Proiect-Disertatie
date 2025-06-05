@@ -8,7 +8,7 @@ from .option import Option
 from .organization import Organization
 from .password import Password
 from .profile_status import ProfileStatus
-from .question import Question
+from .public_key import PublicKey
 from .role import Role
 from .user import User
 from .vote import Vote

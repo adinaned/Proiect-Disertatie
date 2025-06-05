@@ -9,6 +9,11 @@ def create_new_voting_session_endpoint():
     return create()
 
 
+@voting_session_routes.route("/voting_sessions/<int:voting_session_id>/ring", methods=["GET"])
+def get_ring_endpoint(voting_session_id):
+    return get_ring(voting_session_id)
+
+
 @voting_session_routes.route('/voting_sessions', methods=['GET'])
 def get_voting_sessions_endpoint():
     return get_all()

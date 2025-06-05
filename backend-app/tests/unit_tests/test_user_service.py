@@ -33,12 +33,12 @@ class TestUserService(unittest.TestCase):
         Country.metadata.create_all(db.engine)
 
         # Add test dependencies
-        self.test_organisation = Organization(name="Test Organization")
-        self.test_role = Role(name="Test Role", organisation_id=1)
+        self.test_organization = Organization(name="Test Organization")
+        self.test_role = Role(name="Test Role", organization_id=1)
         self.test_profile_status = ProfileStatus(name=ProfileStatusEnum.ACTIVE)
         self.test_country = Country(name="Test Country")
 
-        self.session.add_all([self.test_organisation, self.test_role, self.test_profile_status, self.test_country])
+        self.session.add_all([self.test_organization, self.test_role, self.test_profile_status, self.test_country])
         self.session.commit()
 
     def tearDown(self):
@@ -68,7 +68,7 @@ class TestUserService(unittest.TestCase):
             "address": "123 Test Street",
             "national_id": 123456,
             "role_id": self.test_role.id,
-            "organisation_id": self.test_organisation.id,
+            "organization_id": self.test_organization.id,
             "profile_status_id": self.test_profile_status.id,
             "created_at": date.today()
         }
@@ -91,7 +91,7 @@ class TestUserService(unittest.TestCase):
             last_name="Doe",
             date_of_birth=date(1990, 1, 1),
             role_id=self.test_role.id,
-            organisation_id=self.test_organisation.id,
+            organization_id=self.test_organization.id,
             profile_status_id=self.test_profile_status.id
         )
         self.session.add(user)

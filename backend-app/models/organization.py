@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from . import db
 
 class Organization(db.Model):
-    __tablename__ = "organisations"
+    __tablename__ = "organizations"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), index=True)

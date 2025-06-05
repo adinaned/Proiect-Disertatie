@@ -3,9 +3,11 @@ from services import (create_user, get_all_users, get_user_by_id, update_user, d
 
 
 def create():
+    print(request.get_json())
     try:
         data = request.get_json()
         new_user = create_user(data)
+        print(new_user)
         return jsonify(new_user), 201
     except ValueError as ve:
         return jsonify({"message": str(ve)}), 400

@@ -1,0 +1,61 @@
+<div class="profile-box1" *ngIf="profile">
+    <h2>Profile</h2>
+    <p class="status">
+    <p class="status">Profile status: <span class="active">active</span></p>
+
+    <div class="profile-box2">
+        <form class="profile-form">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>First name</label>
+                    <div class="field-value">{{ profile.first_name }}</div>
+                </div>
+
+                <div class="form-group span-2">
+                    <label>Address</label>
+                    <div class="field-value">{{ profile.address }}</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Last name</label>
+                    <div class="field-value">{{ profile.last_name }}</div>
+                </div>
+
+                <div class="form-group">
+                    <label>City</label>
+                    <div class="field-value">{{ profile.city }}</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Country</label>
+                    <div class="field-value">{{ country }}</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <div class="field-value">{{ email }}</div>
+                </div>
+
+                <div class="form-group span-2">
+                    <label>National ID</label>
+                    <div class="field-value">{{ profile.national_id }}</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Date of birth</label>
+                    <div class="field-value">{{ profile.date_of_birth }}</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Organization</label>
+                    <div class="field-value">{{ organization }}</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Role</label>
+                    <div class="field-value">{{ role }}</div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
