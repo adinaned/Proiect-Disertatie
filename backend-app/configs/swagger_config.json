@@ -1554,14 +1554,14 @@
                     "type": "string",
                     "description": "The user's email address"
                 },
-                "password": {
+                "hashed_password": {
                     "type": "string",
                     "description": "User's hashed password"
                 }
             },
             "required": [
                 "email",
-                "password"
+                "hashed_password"
             ]
         },
         "LoginResponse": {
@@ -1639,14 +1639,14 @@
                     "type": "integer",
                     "description": "The ID of the user"
                 },
-                "password": {
+                "hashed_password": {
                     "type": "string",
                     "description": "The hashed password"
                 }
             },
             "required": [
                 "user_id",
-                "password"
+                "hashed_password"
             ]
         },
         "PasswordResponse": {
@@ -1660,7 +1660,7 @@
                     "type": "integer",
                     "description": "The ID of the user"
                 },
-                "password": {
+                "hashed_password": {
                     "type": "string",
                     "description": "The hashed password"
                 },

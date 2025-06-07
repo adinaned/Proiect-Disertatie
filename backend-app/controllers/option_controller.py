@@ -1,5 +1,6 @@
 from flask import jsonify, request
-from services import (create_option, get_all_options, get_option_by_id, get_all_options_by_session_id, update_option, delete_option)
+from services import (create_option, get_all_options, get_option_by_id, get_all_options_by_session_id, update_option,
+                      delete_option, delete_options_by_session_id)
 
 
 def create(session_id):
@@ -19,11 +20,13 @@ def get_by_id(option_id):
         return jsonify(option), 200
     return jsonify({"message": "Option not found"}), 404
 
+
 def get_by_session_id(session_id):
     option = get_all_options_by_session_id(session_id)
     if option:
         return jsonify(option), 200
     return jsonify({"message": "Option not found"}), 404
+
 
 def get_all():
     options = get_all_options()
@@ -47,6 +50,16 @@ def delete(option_id):
     try:
         result = delete_option(option_id)
         if result.get("message") == "Option not found":
+            return jsonify(result), 404
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+
+
+def delete_by_session_id(session_id):
+    try:
+        result = delete_options_by_session_id(session_id)
+        if isinstance(result, dict) and result.get("message") == "Options not found":
             return jsonify(result), 404
         return jsonify(result), 200
     except Exception as e:

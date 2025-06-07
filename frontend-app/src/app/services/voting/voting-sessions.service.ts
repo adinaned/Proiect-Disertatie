@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable} from "rxjs";
+import {Observable, switchMap, forkJoin} from "rxjs";
 import {HttpClient} from '@angular/common/http';
 
 @Injectable({providedIn: 'root'})
@@ -21,16 +21,28 @@ export class VotingSessionsService {
         return this.http.get<any>(`http://127.0.0.1:5000/users/${userId}`);
     }
 
+    getProfileStatus(userId: number) {
+        return this.http.get<any>(`http://127.0.0.1:5000/profile_statuses/${userId}`);
+    }
+
     getRoleById(roleId: number) {
         return this.http.get<any>(`http://127.0.0.1:5000/roles/${roleId}`);
     }
 
     deleteVotingSession(votingSessionId: number): Observable<any> {
-        this.deleteOptions(votingSessionId);
-        return this.http.delete(`${this.baseUrl}/voting_sessions/${votingSessionId}`);
+        return forkJoin([
+            this.deleteOptions(votingSessionId),
+            this.deletePublicKeys(votingSessionId)
+        ]).pipe(
+            switchMap(() => this.http.delete(`${this.baseUrl}/voting_sessions/${votingSessionId}`))
+        );
     }
 
     deleteOptions(votingSessionId: number): Observable<any> {
-        return this.http.delete(`${this.baseUrl}/options/${votingSessionId}`);
+        return this.http.delete(`${this.baseUrl}/options/session/${votingSessionId}`);
+    }
+
+    deletePublicKeys(votingSessionId: number): Observable<any> {
+        return this.http.delete(`${this.baseUrl}/public_keys/${votingSessionId}`);
     }
 }

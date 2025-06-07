@@ -1,7 +1,7 @@
 from flask import jsonify, request
-from services import create_public_key, get_public_key_by_session_id_and_user_id
+from services import create_public_key, get_public_key_by_session_id_and_user_id, delete_public_keys_by_session_id
 from exceptions import PublicKeyAlreadyExists
-import traceback
+
 
 def create():
     data = request.get_json()
@@ -28,6 +28,16 @@ def get_by_session_id_and_user_id(session_id, user_id):
         result = get_public_key_by_session_id_and_user_id(session_id, user_id)
         if result is None:
             return jsonify({'message': 'Public key not found'}), 404
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({'error': 'Internal server error', 'details': str(e)}), 500
+
+
+def delete_by_session_id(session_id):
+    try:
+        result = delete_public_keys_by_session_id(session_id)
+        if not result:
+            return jsonify({"message": "No public keys found for session"}), 200
         return jsonify(result), 200
     except Exception as e:
         return jsonify({'error': 'Internal server error', 'details': str(e)}), 500

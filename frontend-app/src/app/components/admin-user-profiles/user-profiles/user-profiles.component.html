@@ -1,0 +1,23 @@
+<div class="container1">
+    <h2>User Profiles</h2>
+    <div class="container2">
+        <div class="users-list" *ngFor="let user of users">
+            <div class="header">
+                <p class="status">
+                    {{ user.firstName }} {{ user.lastName }}
+                </p>
+                <div class="footer">
+                    <button class="view-user-btn" title="View user" (click)="viewUser(user.id)">
+                        View User
+                    </button>
+                </div>
+            </div>
+            <div class="user-profile-box">
+                <p class="status" [ngClass]="getStatusClass(user.profile_status)">
+                    Profile status: <span>{{ user.profile_status }}</span>
+                </p>
+                <p class="role">Role: {{ user.role }}</p>
+            </div>
+        </div>
+    </div>
+</div>

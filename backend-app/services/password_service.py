@@ -72,10 +72,10 @@ def update_password(password_id, data):
     if "password" in data:
         password_data = data["password"]
         if not isinstance(password_data, str) or not password_data.strip():
-            raise ValueError("The 'password' field must be a non-empty string")
+            raise ValueError("The 'hashed_password' field must be a non-empty string")
         if len(password_data) > 128:
-            raise ValueError("The 'password' field must not exceed 128 characters")
-        password.password = password_data.strip()
+            raise ValueError("The 'hashed_password' field must not exceed 128 characters")
+        password.hashed_password = password_data.strip()
 
     if "updated_at" in data:
         password.updated_at = data["updated_at"]

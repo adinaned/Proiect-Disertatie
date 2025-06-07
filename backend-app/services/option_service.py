@@ -39,12 +39,14 @@ def get_option_by_id(option_id):
 
     return OptionResponse.model_validate(option).model_dump()
 
+
 def get_all_options_by_session_id(session_id):
     options = Option.query.filter_by(session_id=session_id).all()
     if not options:
         return []
 
     return [OptionResponse.model_validate(option).model_dump() for option in options]
+
 
 def get_all_options():
     options = Option.query.all()
@@ -98,6 +100,22 @@ def delete_option(option_id):
     try:
         db.session.commit()
         return {"message": "Option deleted successfully"}
+    except Exception as e:
+        db.session.rollback()
+        raise e
+
+
+def delete_options_by_session_id(session_id):
+    options = Option.query.filter_by(session_id=session_id).all()
+    if not options:
+        return {"message": "Options not found"}
+
+    for option in options:
+        db.session.delete(option)
+
+    try:
+        db.session.commit()
+        return [OptionResponse.model_validate(option).model_dump() for option in options]
     except Exception as e:
         db.session.rollback()
         raise e

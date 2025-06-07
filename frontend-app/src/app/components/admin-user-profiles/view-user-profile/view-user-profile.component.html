@@ -1,9 +1,31 @@
 <div class="profile-box1" *ngIf="profile">
-    <h2>Profile</h2>
-    <p class="status">
-    <p class="status">
-        Profile status: <span class="status" [ngClass]="profileStatus.toLowerCase()">{{ profileStatus.toLowerCase() }}</span>
-    </p>
+    <div class="first-row">
+        <h2>Profile</h2>
+        <div *ngIf="hasUnsavedChanges" class="unsaved-warning">
+            There are unsaved changes
+        </div>
+    </div>
+    <div class="status-row">
+        <p class="status">
+            Profile status: <span class="status"
+                                  [ngClass]="currentProfileStatus.toLowerCase()">{{ currentProfileStatus }}</span>
+        </p>
+        <div class="status-actions">
+            <select
+                    [(ngModel)]="selectedProfileStatus"
+                    name="profileStatus"
+                    class="status-select"
+                    (change)="checkForUnsavedChanges()"
+            >
+                <option value="" disabled selected hidden>Change profile status</option>
+                <option *ngFor="let status of statusOptions" [value]="status"
+                        [hidden]="status === currentProfileStatus">
+                    {{ status }}
+                </option>
+            </select>
+            <button class="save-btn" (click)="saveChanges()">Save Changes</button>
+        </div>
+    </div>
 
     <div class="profile-box2">
         <form class="profile-form">
@@ -55,7 +77,21 @@
 
                 <div class="form-group">
                     <label>Role</label>
-                    <div class="field-value">{{ role }}</div>
+                    <select
+                            [(ngModel)]="role"
+                            name="role"
+                            (change)="onRoleChange(role)"
+                    >
+                        <option [ngValue]="null" disabled hidden>Role*</option>
+                        <option
+                                *ngFor="let r of roles"
+                                [ngValue]="r"
+                                [hidden]="role?.id === r.id"
+                        >
+                            {{ r.name }}
+                        </option>
+                    </select>
+
                 </div>
             </div>
         </form>

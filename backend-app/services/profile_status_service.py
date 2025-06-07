@@ -1,5 +1,9 @@
+from datetime import datetime, timezone
+
 from models import ProfileStatus, db
 from schemas.profile_status_schema import ProfileStatusResponse
+
+import traceback
 
 
 def create_profile_status(data):
@@ -33,8 +37,8 @@ def create_profile_status(data):
     return ProfileStatusResponse.model_validate(profile_status).model_dump()
 
 
-def get_profile_status_by_id(profile_status_id):
-    profile_status = db.session.get(ProfileStatus, profile_status_id)
+def get_profile_status_by_user_id(user_id):
+    profile_status = db.session.query(ProfileStatus).filter_by(user_id=user_id).first()
     if not profile_status:
         return None
 
@@ -49,29 +53,33 @@ def get_all_profile_statuses():
     return [ProfileStatusResponse.model_validate(status).model_dump() for status in profile_statuses]
 
 
-def update_profile_status(profile_status_id, data):
+def update_profile_status_by_user_id(user_id, data):
     if not isinstance(data, dict):
         raise ValueError("Payload must be a non-empty dictionary")
 
     if "id" in data:
         raise ValueError("You cannot modify the ID")
 
-    profile_status = db.session.get(ProfileStatus, profile_status_id)
+    profile_status = db.session.query(ProfileStatus).filter_by(user_id=user_id).first()
     if not profile_status:
         raise ValueError("ProfileStatus not found")
 
     if "name" in data:
-        name = data["name"]
-        if name not in ProfileStatus.__table__.c.name.type.enums:
-            raise ValueError(f"The 'name' field must be one of {ProfileStatus.__table__.c.name.type.enums}")
+        name = data["name"].upper().strip()
+        allowed = [v.upper() for v in ProfileStatus.__table__.c.name.type.enums]
+        if name not in allowed:
+            raise ValueError(f"The 'name' field must be one of {allowed}")
         profile_status.name = name
 
-    if "updated_at" in data:
-        profile_status.updated_at = data["updated_at"]
+    data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    profile_status.updated_at = datetime.fromisoformat(data["updated_at"])
+
+    db.session.add(profile_status)
 
     try:
         db.session.commit()
     except Exception as e:
+        traceback.print_exc()
         db.session.rollback()
         raise e
 

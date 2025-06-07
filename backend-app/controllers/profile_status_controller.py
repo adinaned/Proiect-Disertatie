@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from services import (create_profile_status, get_all_profile_statuses, get_profile_status_by_id, update_profile_status, delete_profile_status)
+from services import (create_profile_status, get_all_profile_statuses, get_profile_status_by_user_id, update_profile_status_by_user_id, delete_profile_status)
 
 
 def create():
@@ -13,8 +13,8 @@ def create():
         return jsonify({"message": str(e)}), 500
 
 
-def get_by_id(profile_status_id):
-    profile_status = get_profile_status_by_id(profile_status_id)
+def get_by_user_id(user_id):
+    profile_status = get_profile_status_by_user_id(user_id)
     if profile_status:
         return jsonify(profile_status), 200
     return jsonify({"message": "ProfileStatus not found"}), 404
@@ -27,10 +27,11 @@ def get_all():
     return jsonify(profile_statuses), 200
 
 
-def update(profile_status_id):
+def update_by_user_id(user_id):
     try:
         data = request.get_json()
-        updated_profile_status = update_profile_status(profile_status_id, data)
+        print(data)
+        updated_profile_status = update_profile_status_by_user_id(user_id, data)
         return jsonify(updated_profile_status), 200
     except ValueError as ve:
         return jsonify({"message": str(ve)}), 400

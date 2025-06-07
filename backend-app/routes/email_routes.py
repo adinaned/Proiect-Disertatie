@@ -13,6 +13,10 @@ def create_new_email_endpoint():
 def get_email_by_name_endpoint(email_address):
     return get_by_name(email_address)
 
+@email_routes.route('/emails/user/<int:user_id>', methods=['GET'])
+def get_email_by_user_id_endpoint(user_id):
+    return get_by_user_id(user_id)
+
 
 @email_routes.route('/emails/<int:email_id>', methods=['PUT'])
 def update_email_by_id_endpoint(email_id):

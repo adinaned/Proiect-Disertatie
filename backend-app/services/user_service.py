@@ -1,5 +1,6 @@
 from models import User, db
 from schemas.user_schema import UserResponse
+from datetime import datetime, timezone
 
 
 def create_user(data):
@@ -18,12 +19,13 @@ def create_user(data):
     national_id = data.get("national_id")
     role_id = data.get("role_id")
     organization_id = data.get("organization_id")
-    created_at = data.get("created_at")
 
     if not first_name or not isinstance(first_name, str):
         raise ValueError("The 'first_name' field is required and must be a non-empty string")
     if not last_name or not isinstance(last_name, str):
         raise ValueError("The 'last_name' field is required and must be a non-empty string")
+
+    created_at = datetime.now(timezone.utc)
 
     user = User(
         first_name=first_name.strip(),
@@ -42,6 +44,8 @@ def create_user(data):
 
     try:
         db.session.commit()
+        from services import create_profile_status
+        create_profile_status({"user_id": user.id, "name": "OPEN", "updated_at": created_at})
     except Exception as e:
         db.session.rollback()
         raise e

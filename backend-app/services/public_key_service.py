@@ -44,3 +44,20 @@ def get_public_key_by_session_id_and_user_id(session_id, user_id):
         return None
 
     return PublicKeyResponse.model_validate(public_key).model_dump()
+
+
+def delete_public_keys_by_session_id(session_id):
+    public_keys = db.session.query(PublicKey).filter_by(session_id=session_id).all()
+    print("AICI0")
+    if not public_keys:
+        print("AICI1")
+        print("No public keys found for session ID:", session_id)
+        return []
+
+    for key in public_keys:
+        print("AICI2")
+        db.session.delete(key)
+
+    db.session.commit()
+
+    return [PublicKeyResponse.model_validate(key).model_dump() for key in public_keys]

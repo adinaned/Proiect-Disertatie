@@ -2,7 +2,7 @@
     color: #1e4c57;
     font-weight: bold;
     position: absolute;
-    top: 2em;
+    top: 1em;
     left: 1.5em;
     width: 100%;
 }
@@ -85,6 +85,77 @@ select {
     font-size: 16px;
     appearance: none;
     cursor: pointer;
+    background-color: #fafaff;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #d9d9d9;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%231e4c57" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px 16px;
+    padding-right: 36px;
+}
+
+
+.status {
+    margin-top: 0.25em;
+}
+
+.first-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.unsaved-warning {
+    color: #c12a2a;
+    font-weight: bold;
+    text-align: right;
+    white-space: nowrap;
+    padding-bottom: 0.5em;
+    margin-right: 3em;
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 1.5em;
+    margin-bottom: 1em;
+    flex-wrap: wrap;
+}
+
+.status-actions {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
+
+.status-select {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    background-color: #fafaff;
+    font-size: 14px;
+    color: #1e4c57;
+    min-width: 160px;
+}
+
+.save-btn {
+    background-color: #1e4c57;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    margin-right: 1em;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.save-btn:hover {
+    background-color: #163a44;
 }
 
 .status.active {

@@ -117,7 +117,7 @@ input, select {
     display: flex;
     justify-content: center;
     gap: 1.5em;
-    margin-top: 1.2em; /* mai puțin spațiu sus față de butoane */
+    margin-top: 1.2em;
 }
 
 button {

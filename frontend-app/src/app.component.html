@@ -12,16 +12,29 @@
          (mouseleave)="showMenu = false">
         <div class="user-wrapper" *ngIf="authService.isLoggedIn()">
             <p class="username">Hi, {{ userName }}</p>
-            <img (click)="handleProfile()" ngSrc="assets/user-icon.png" alt="User" class="user-icon" height="500"
-                 width="500"/>
+            <img (click)="handleProfile()"
+                 ngSrc="assets/user-icon.png"
+                 alt="User"
+                 class="user-icon"
+                 height="500"
+                 width="500" />
+
             <div class="dropdown" *ngIf="showMenu">
-                <a (click)="handleProfile()" class="view-profile">View profile</a>
+                <a (click)="handleProfile()" class="view-profile">View Profile</a>
                 <a (click)="handleEditProfile()" class="change-password">Change Password</a>
+
+                <ng-container *ngIf="isAdmin">
+                    <a (click)="viewUserProfiles()" class="view-user-profiles">View User Profiles</a>
+                    <a (click)="viewVotingSessions()" class="view-voting-sessions">View Voting Sessions</a>
+                    <a (click)="createVotingSession()" class="create-voting-session">Create a Voting Session</a>
+                </ng-container>
+
                 <a (click)="handleLogout()" class="logout">Log out</a>
             </div>
         </div>
     </div>
 </div>
+
 
 
 <div class="body-container1">

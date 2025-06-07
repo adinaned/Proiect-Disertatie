@@ -59,8 +59,17 @@ def get_email_by_id(email_id):
 
     return EmailResponse.model_validate(email).model_dump()
 
+
 def get_email_by_name(email_address):
     email = Email.query.filter_by(email_address=email_address).first()
+    if not email:
+        return None
+
+    return EmailResponse.model_validate(email).model_dump()
+
+
+def get_email_by_user_id(user_id):
+    email = Email.query.filter_by(user_id=user_id).first()
     if not email:
         return None
 

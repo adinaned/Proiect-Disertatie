@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from services import (create_email, get_email_by_id, get_email_by_name, update_email, delete_email)
+from services import (create_email, get_email_by_id, get_email_by_name, get_email_by_user_id, update_email, delete_email)
 
 
 def create():
@@ -22,6 +22,12 @@ def get_by_id(email_id):
 
 def get_by_name(email_address):
     email = get_email_by_name(email_address)
+    if email:
+        return jsonify(email), 200
+    return jsonify({"message": "Email not found"}), 404
+
+def get_by_user_id(user_id):
+    email = get_email_by_user_id(user_id)
     if email:
         return jsonify(email), 200
     return jsonify({"message": "Email not found"}), 404

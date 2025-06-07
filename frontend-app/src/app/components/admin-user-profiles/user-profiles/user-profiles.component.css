@@ -14,7 +14,7 @@
     scrollbar-color: #1e4c57 #ffffff;
 }
 
-.container1::-webkit-scrollbar-thumb {
+.container2::-webkit-scrollbar-thumb {
     background-color: #1e4c57;
     border-radius: 10px;
 }
@@ -22,6 +22,10 @@
 h2, p, span {
     margin-bottom: 20px;
     color: #1e4c57;
+}
+
+.role {
+    font-weight: bold;
 }
 
 .status {
@@ -32,34 +36,23 @@ h2, p, span {
     color: #C2AD27;
 }
 
-.status.submitted span {
-    color: #33A92A;
-}
-
 .status.closed span {
     color: #C12A2A;
 }
 
-.status.upcoming span {
+.status.active span {
+    color: #33A92A;
+}
+
+.status.suspended span {
     color: #CF9426;
 }
 
-.question-box {
-    background-color: #d9d9d9;
-    padding-left: 1em;
-    padding-bottom: 1em;
-    border-radius: 20px;
-}
-
-.stats-link {
-    font-size: 14px;
-    color: #333;
-}
-
-.session {
+.users-list {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-bottom: 1em;
 }
 
 .header {
@@ -78,15 +71,7 @@ h2, p, span {
     flex-wrap: wrap;
 }
 
-.time-remaining {
-    font-size: 14px;
-    color: #555;
-    white-space: nowrap;
-    line-height: 40px;
-}
-
-.vote-btn,
-.delete-btn{
+.view-user-btn {
     background-color: #1e4c57;
     color: white;
     border: none;
@@ -100,13 +85,14 @@ h2, p, span {
     justify-content: center;
 }
 
-.vote-btn:hover,
-.delete-btn:hover {
+.view-user-btn:hover {
     background-color: #456;
 }
 
-.vote-btn.greyed-out,
-.delete-btn.greyed-out {
+.user-profile-box {
     background-color: #d9d9d9;
-    cursor: not-allowed;
+    padding-left: 1em;
+    padding-bottom: 1em;
+    border-radius: 20px;
 }
+

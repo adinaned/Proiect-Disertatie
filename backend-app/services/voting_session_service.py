@@ -1,3 +1,4 @@
+import traceback
 from datetime import date
 from models import VotingSession, db
 from schemas.voting_session_schema import VotingSessionResponse
@@ -6,6 +7,7 @@ from apscheduler.triggers.date import DateTrigger
 from dateutil import parser
 import pytz
 from datetime import timezone
+import traceback
 
 
 def save_ring_to_session(session_id):
@@ -157,5 +159,6 @@ def delete_voting_session(session_id):
         db.session.commit()
         return {"message": "Voting session deleted successfully"}
     except Exception as e:
+        traceback.print_exc()
         db.session.rollback()
         raise e

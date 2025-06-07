@@ -11,7 +11,7 @@ G = CURVE.generator
 
 
 def int_from_hash(data: bytes) -> int:
-    return int.from_bytes(hashlib.sha3_256(data).digest(), "big") % ORDER
+    return int.from_bytes(hashlib.sha256(data).digest(), "big") % ORDER
 
 
 def hash_point(P: ellipticcurve.Point) -> ellipticcurve.Point:
@@ -32,27 +32,30 @@ def generate_ring(session_id: int, *_):
 
 def lsag_verify(message: bytes, sig: Dict) -> bool:
     ring = [
-        ellipticcurve.Point(CURVE.curve, int(xy["x"], 16), int(xy["y"], 16))
+        ellipticcurve.Point(CURVE.curve, int(xy["x"]), int(xy["y"]))
         for xy in sig["ring"]
     ]
     n = len(ring)
-    I = ellipticcurve.Point(CURVE.curve, int(sig["I"]["x"], 16), int(sig["I"]["y"], 16))
+    I = ellipticcurve.Point(CURVE.curve, int(sig["I"]["x"]), int(sig["I"]["y"]))
     if I == ellipticcurve.INFINITY:
         return False
 
-    c = [0] * (n + 1)
-    c[0] = sig["c0"]
-    r = sig["r"]
+    r = [int(x) for x in sig["r"]]
+    c = [None] * (n + 1)
+    c[0] = int(sig["c0"])
 
     for i in range(n):
+        Hp = hash_point(ring[i])
         L_i = r[i] * G + c[i] * ring[i]
-        R_i = r[i] * hash_point(ring[i]) + c[i] * I
+        R_i = r[i] * Hp + c[i] * I
         c[i + 1] = int_from_hash(
             message +
             L_i.x().to_bytes(32, "big") + L_i.y().to_bytes(32, "big") +
             R_i.x().to_bytes(32, "big") + R_i.y().to_bytes(32, "big")
         )
+
     return c[0] == c[n]
+
 
 def calculate_ring_hash(session_id) -> str:
     voting_session = db.session.query(VotingSession).filter_by(id=session_id).first()

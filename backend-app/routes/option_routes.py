@@ -32,3 +32,8 @@ def update_option_by_id_endpoint(option_id):
 @option_routes.route('/options/<int:option_id>', methods=['DELETE'])
 def delete_option_endpoint(option_id):
     return delete(option_id)
+
+
+@option_routes.route('/options/session/<int:session_id>', methods=['DELETE'])
+def delete_options_by_session_id_endpoint(session_id):
+    return delete_by_session_id(session_id)

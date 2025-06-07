@@ -15,7 +15,7 @@ CREATE TABLE `users` (
 
 CREATE TABLE `passwords` (
   `user_id` integer UNIQUE PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  `hashed_password` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
   `updated_at` timestamp NOT NULL
 );
 
@@ -36,10 +36,10 @@ CREATE TABLE `countries` (
 CREATE TABLE `roles` (
   `id` integer UNIQUE PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `organisation_id` integer NOT NULL
+  `organization_id` integer NOT NULL
 );
 
-CREATE TABLE `organisations` (
+CREATE TABLE `organizations` (
   `id` integer UNIQUE PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL
 );
@@ -93,17 +93,17 @@ ALTER TABLE `users` ADD FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`)
 
 ALTER TABLE `users` ADD FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
 
-ALTER TABLE `users` ADD FOREIGN KEY (`organization_id`) REFERENCES `organisations` (`id`);
+ALTER TABLE `users` ADD FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`);
 
 ALTER TABLE `profile_statuses` ADD FOREIGN KEY (`id`) REFERENCES `users` (`profile_statuses_id`);
 
 ALTER TABLE `users` ADD FOREIGN KEY (`id`) REFERENCES `passwords` (`user_id`);
 
-ALTER TABLE `organisations` ADD FOREIGN KEY (`id`) REFERENCES `roles` (`organisation_id`);
+ALTER TABLE `organizations` ADD FOREIGN KEY (`id`) REFERENCES `roles` (`organization_id`);
 
 ALTER TABLE `roles` ADD FOREIGN KEY (`name`) REFERENCES `voting_sessions` (`role_name`);
 
-ALTER TABLE `organisations` ADD FOREIGN KEY (`name`) REFERENCES `voting_sessions` (`organization_name`);
+ALTER TABLE `organizations` ADD FOREIGN KEY (`name`) REFERENCES `voting_sessions` (`organization_name`);
 
 ALTER TABLE `questions` ADD FOREIGN KEY (`session_id`) REFERENCES `voting_sessions` (`id`);
 

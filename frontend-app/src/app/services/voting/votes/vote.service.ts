@@ -35,11 +35,11 @@ export class VoteService {
             public_key_y: publicKey.y
         };
         console.log(JSON.stringify(payload));
-        return this.http.post(`${this.baseUrl}/public-keys`, payload);
+        return this.http.post(`${this.baseUrl}/public_keys`, payload);
     }
 
     getPublicKey(sessionId: number, userId: number) {
-        const url = `${this.baseUrl}/public-keys/${sessionId}/${userId}`;
+        const url = `${this.baseUrl}/public_keys/${sessionId}/${userId}`;
         console.log("Fetching public key from:", url);
 
         return this.http.get<{ public_key_x: string, public_key_y: string }>(url);

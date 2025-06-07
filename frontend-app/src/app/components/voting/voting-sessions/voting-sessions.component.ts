@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
-import {NgClass, NgForOf, NgIf} from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { NgClass, NgForOf, NgIf } from '@angular/common';
 
-import {VotingSessionsService} from '../../../services/voting/voting-sessions.service';
-import {VoteService} from '../../../services/voting/votes/vote.service';
+import { VotingSessionsService } from '../../../services/voting/voting-sessions.service';
+import { VoteService } from '../../../services/voting/votes/vote.service';
 
 @Component({
     selector: 'app-voting-sessions',
@@ -15,50 +15,122 @@ import {VoteService} from '../../../services/voting/votes/vote.service';
 export class VotingSessionsComponent implements OnInit {
     sessions: any[] = [];
     isAdmin: boolean = false;
+    profileStatus: string = '';
+    profileActivatedAt: Date | null = null;
 
     constructor(
         private router: Router,
         private votingSessionService: VotingSessionsService,
         private voteService: VoteService
-    ) {
-    }
+    ) {}
 
     ngOnInit() {
         this.checkIfUserIsAdmin();
+
+        const userData = localStorage.getItem('user');
+        const email = userData ? JSON.parse(userData)?.email : null;
+        if (!email) return;
+
+        this.loadUserProfileStatus(email);
+    }
+
+    loadUserProfileStatus(email: string) {
+        this.votingSessionService.getUserIdByEmail(email).subscribe({
+            next: (emailRes) => {
+                const userId = emailRes?.user_id;
+                if (!userId) return;
+
+                this.votingSessionService.getProfileStatus(userId).subscribe({
+                    next: (profileRes) => {
+                        this.profileStatus = profileRes?.name?.toUpperCase();
+                        this.profileActivatedAt = profileRes?.updated_at ? new Date(profileRes.updated_at) : null;
+                        this.loadVotingSessions();
+                    },
+                    error: () => console.error('Error fetching profile status.')
+                });
+            },
+            error: () => console.error('Error fetching user ID from email.')
+        });
+    }
+
+    loadVotingSessions() {
         this.votingSessionService.getAllVotingSessions().subscribe({
             next: (data) => {
                 const now = new Date();
-                this.sessions = data.map((session: any) => {
-                    const start = new Date(session.start_datetime);
-                    const end = new Date(session.end_datetime);
-                    let status = 'closed';
-                    let time_remaining = '';
 
-                    if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
-                        if (now < start) {
-                            status = 'upcoming';
-                            time_remaining = 'Opening in ' + this.calculateTimeRemaining(start);
-                        } else if (now >= start && now <= end) {
-                            status = 'open';
-                            time_remaining = 'Voting session closes in ' + this.calculateTimeRemaining(end);
-                        } else {
-                            status = 'closed';
+                let filteredSessions = data;
+
+                if (this.profileStatus === 'OPEN') {
+                    filteredSessions = [];
+                } else if (this.profileStatus === 'ACTIVE' && this.profileActivatedAt) {
+                    filteredSessions = data.filter((session: any) => {
+                        const start = new Date(session.start_datetime);
+                        return start > this.profileActivatedAt!;
+                    });
+                }
+
+                this.sessions = filteredSessions
+                    .map((session: any) => {
+                        const start = new Date(session.start_datetime);
+                        const end = new Date(session.end_datetime);
+                        let status = 'closed';
+                        let time_remaining = '';
+
+                        if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+                            if (now < start) {
+                                status = 'upcoming';
+                                time_remaining = 'Opening in ' + this.calculateTimeRemaining(start);
+                            } else if (now >= start && now <= end) {
+                                status = 'open';
+                                time_remaining = 'Voting session closes in ' + this.calculateTimeRemaining(end);
+                            } else {
+                                status = 'closed';
+                            }
                         }
-                    }
 
-                    return {
-                        ...session,
-                        status,
-                        time_remaining,
-                        stats_url: 'https://voting_stats'
-                    };
-                });
+                        return {
+                            ...session,
+                            status,
+                            time_remaining,
+                            start_date: start,
+                            end_date: end,
+                            isVoterRegistered: this.isRegistered(session.id),
+                            stats_url: 'https://voting_stats'
+                        };
+                    });
+
+                this.sortSessions();
             },
             error: (err) => {
                 console.error('Error fetching voting sessions:', err);
             }
         });
     }
+
+    sortSessions(): void {
+        this.sessions = [
+            ...this.sessions
+                .filter(s => s.status === 'upcoming' && !s.isVoterRegistered)
+                .sort((a, b) => a.start_date.getTime() - b.start_date.getTime()),
+
+            ...this.sessions
+                .filter(s => s.status === 'open' && s.isVoterRegistered)
+                .sort((a, b) => a.end_date.getTime() - b.end_date.getTime()),
+
+            ...this.sessions
+                .filter(s => s.status === 'upcoming' && s.isVoterRegistered)
+                .sort((a, b) => a.start_date.getTime() - b.start_date.getTime()),
+
+            ...this.sessions
+                .filter(s => s.status === 'open' && !s.isVoterRegistered)
+                .sort((a, b) => a.end_date.getTime() - b.end_date.getTime()),
+
+            ...this.sessions
+                .filter(s => s.status === 'closed')
+                .sort((a, b) => b.end_date.getTime() - a.end_date.getTime())
+        ];
+    }
+
 
     checkIfUserIsAdmin(): void {
         const userData = localStorage.getItem('user');
@@ -104,7 +176,6 @@ export class VotingSessionsComponent implements OnInit {
         }
     }
 
-
     getStatusClass(status: string): string {
         return status;
     }
@@ -131,11 +202,6 @@ export class VotingSessionsComponent implements OnInit {
         return parts.join(', ');
     }
 
-
-    private pad(n: number): string {
-        return n < 10 ? '0' + n : '' + n;
-    }
-
     handleVote(session: any) {
         this.router.navigate(['/voting-session-form', session.id]);
     }
@@ -155,7 +221,11 @@ export class VotingSessionsComponent implements OnInit {
                     const userId = response.user_id;
 
                     this.voteService.submitPublicKey(session.id, userId, keys.publicKey).subscribe({
-                        next: () => console.log('Public key sent to backend.'),
+                        next: () => {
+                            console.log('Public key sent to backend.');
+                            session.isVoterRegistered = true;
+                            this.sortSessions();
+                        },
                         error: (err) => console.error('Error sending public key:', err)
                     });
                 },
@@ -180,7 +250,7 @@ export class VotingSessionsComponent implements OnInit {
     }
 
     getButtonLabel(session: any): string {
-        const isRegistered = this.isRegistered(session.id);
+        const isRegistered = session.isVoterRegistered;
 
         if (session.status === 'closed') {
             return 'Closed';
@@ -189,7 +259,7 @@ export class VotingSessionsComponent implements OnInit {
             return isRegistered ? 'Vote' : 'Register to Vote';
         }
         if (session.status === 'open') {
-            return isRegistered ? 'Vote' : 'Unavailable';
+            return isRegistered ? 'Vote' : 'Not Registered';
         }
         if (session.status === 'submitted') {
             return 'Voted';
@@ -199,7 +269,7 @@ export class VotingSessionsComponent implements OnInit {
     }
 
     isButtonDisabled(session: any): boolean {
-        const isRegistered = this.isRegistered(session.id);
+        const isRegistered = session.isVoterRegistered;
 
         if (session.status === 'open') {
             return !isRegistered;
@@ -222,7 +292,6 @@ export class VotingSessionsComponent implements OnInit {
 
     async savePublicKeyToStorage(sessionId: number, publicKey: { x: string; y: string }) {
         localStorage.setItem(`publicKey_${sessionId}`, JSON.stringify(publicKey));
-        // await this.voteService.sendPublicKey(sessionId, publicKey).toPromise();
-        console.log('Public key sent for session ${sessionId}');
+        console.log(`Public key sent for session ${sessionId}`);
     }
 }
