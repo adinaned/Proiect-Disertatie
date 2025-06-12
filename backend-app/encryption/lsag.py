@@ -18,19 +18,23 @@ def hash_point(P: ellipticcurve.Point) -> ellipticcurve.Point:
     return int_from_hash(P.x().to_bytes(32, "big") + P.y().to_bytes(32, "big")) * G
 
 
-def generate_ring(session_id: int, *_):
-    print(f"Generating ring for session {session_id}")
-    session = db.session.query(VotingSession).filter_by(id=session_id).first()
+def generate_ring(voting_session_id: int, *_):
+    print(f"Generating ring for session {voting_session_id}")
+    session = db.session.query(VotingSession).filter_by(id=voting_session_id).first()
     if not session:
         raise ValueError("Voting session not found")
 
     public_keys = db.session.query(PublicKey.public_key_x, PublicKey.public_key_y). \
-        filter(PublicKey.session_id == session_id).all()
+        filter(PublicKey.voting_session_id == voting_session_id).all()
 
     ring = {"ring": [{"x": x, "y": y} for i, (x, y) in enumerate(public_keys)]}
     return ring
 
+
 def lsag_verify(message: bytes, sig: Dict) -> bool:
+    from pprint import pprint
+    pprint(message)
+    pprint(sig)
     ring = [
         ellipticcurve.Point(CURVE.curve, int(xy["x"]), int(xy["y"]))
         for xy in sig["ring"]
@@ -57,8 +61,8 @@ def lsag_verify(message: bytes, sig: Dict) -> bool:
     return c[0] == c[n]
 
 
-def calculate_ring_hash(session_id) -> str:
-    voting_session = db.session.query(VotingSession).filter_by(id=session_id).first()
+def calculate_ring_hash(voting_session_id) -> str:
+    voting_session = db.session.query(VotingSession).filter_by(id=voting_session_id).first()
     ring = voting_session.key_ring
 
     sorted_ring = sorted(ring)

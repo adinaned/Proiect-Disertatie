@@ -47,7 +47,8 @@ h2, p, span {
 .question-box {
     background-color: #d9d9d9;
     padding-left: 1em;
-    padding-bottom: 1em;
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
     border-radius: 20px;
 }
 

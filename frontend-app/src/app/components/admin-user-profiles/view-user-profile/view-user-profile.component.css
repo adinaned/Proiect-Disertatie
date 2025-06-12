@@ -170,6 +170,6 @@ select {
     color: #c12a2a;
 }
 
-.status.open {
+.status.pending {
     color: #c2ad27;
 }

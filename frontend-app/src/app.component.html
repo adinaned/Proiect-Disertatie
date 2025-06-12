@@ -1,6 +1,6 @@
 <div class="header">
     <div class="left-section">
-        <button *ngIf="authService.isLoggedIn()" (click)="handleHome()" class="home-btn">Home</button>
+        <button *ngIf="authenticated" (click)="handleHome()" class="home-btn">Home</button>
     </div>
 
     <div class="center-section">
@@ -10,14 +10,14 @@
     <div class="right-section"
          (mouseenter)="showMenu = true"
          (mouseleave)="showMenu = false">
-        <div class="user-wrapper" *ngIf="authService.isLoggedIn()">
+        <div class="user-wrapper" *ngIf="authenticated">
             <p class="username">Hi, {{ userName }}</p>
             <img (click)="handleProfile()"
                  ngSrc="assets/user-icon.png"
                  alt="User"
                  class="user-icon"
                  height="500"
-                 width="500" />
+                 width="500"/>
 
             <div class="dropdown" *ngIf="showMenu">
                 <a (click)="handleProfile()" class="view-profile">View Profile</a>
@@ -25,7 +25,6 @@
 
                 <ng-container *ngIf="isAdmin">
                     <a (click)="viewUserProfiles()" class="view-user-profiles">View User Profiles</a>
-                    <a (click)="viewVotingSessions()" class="view-voting-sessions">View Voting Sessions</a>
                     <a (click)="createVotingSession()" class="create-voting-session">Create a Voting Session</a>
                 </ng-container>
 
@@ -34,7 +33,6 @@
         </div>
     </div>
 </div>
-
 
 
 <div class="body-container1">

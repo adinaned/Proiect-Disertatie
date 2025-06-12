@@ -1,28 +1,31 @@
-from models import Option, db
+from models import Option, VotingSession, db
 from schemas.option_schema import OptionResponse
 
-
-def create_option(data, session_id):
+def create_option(data, voting_session_id):
     if not isinstance(data, dict):
-        raise ValueError("Payload must be a JSON object")
+        raise ValueError("Payload must be a JSON object.")
 
     if "id" in data:
-        raise ValueError("You cannot manually set the ID")
+        raise ValueError("You cannot manually set the ID.")
 
     name = data.get("name")
+    if not isinstance(name, str) or not name.strip():
+        raise ValueError("The 'name' field is required and must be a non-empty string.")
+    if len(name.strip()) > 250:
+        raise ValueError("The 'name' field must not exceed 250 characters.")
+    if len(name.strip()) < 3:
+        raise ValueError("The 'name' field must have at least 3 characters.")
 
-    if not name or not isinstance(name, str):
-        raise ValueError("The 'name' field is required and must be a non-empty string")
-    if len(name) > 250:
-        raise ValueError("The 'name' field must not exceed 250 characters")
+    voting_session = db.session.get(VotingSession, voting_session_id)
+    if not voting_session:
+        raise ValueError(f"Voting session with id '{voting_session_id}' does not exist.")
 
     option = Option(
         name=name.strip(),
-        session_id=session_id
+        voting_session_id=voting_session_id
     )
 
     db.session.add(option)
-
     try:
         db.session.commit()
     except Exception as e:
@@ -30,6 +33,7 @@ def create_option(data, session_id):
         raise e
 
     return OptionResponse.model_validate(option).model_dump()
+
 
 
 def get_option_by_id(option_id):
@@ -40,16 +44,8 @@ def get_option_by_id(option_id):
     return OptionResponse.model_validate(option).model_dump()
 
 
-def get_all_options_by_session_id(session_id):
-    options = Option.query.filter_by(session_id=session_id).all()
-    if not options:
-        return []
-
-    return [OptionResponse.model_validate(option).model_dump() for option in options]
-
-
-def get_all_options():
-    options = Option.query.all()
+def get_all_options_by_session_id(voting_session_id):
+    options = Option.query.filter_by(voting_session_id=voting_session_id).all()
     if not options:
         return []
 
@@ -63,23 +59,26 @@ def update_option(option_id, data):
     if "id" in data:
         raise ValueError("You cannot modify the ID")
 
+    if "voting_session_id" in data:
+        raise ValueError("You are not allowed to modify 'voting_session_id'")
+
     option = db.session.get(Option, option_id)
     if not option:
         raise ValueError("Option not found")
 
     if "name" in data:
-        name = data["name"]
-        if not isinstance(name, str) or not name.strip():
+        name = data["name"].strip()
+        if not name:
             raise ValueError("The 'name' field must be a non-empty string")
         if len(name) > 250:
             raise ValueError("The 'name' field must not exceed 250 characters")
-        option.name = name.strip()
+        if len(name) < 3:
+            raise ValueError("The 'name' field must have at least 3 characters")
 
-    if "session_id" in data:
-        session_id = data["session_id"]
-        if not isinstance(session_id, int):
-            raise ValueError("The 'session_id' field must be an integer")
-        option.session_id = session_id
+        if name == option.name:
+            raise ValueError("You cannot update the option with the same name it already has.")
+
+        option.name = name
 
     try:
         db.session.commit()
@@ -105,8 +104,8 @@ def delete_option(option_id):
         raise e
 
 
-def delete_options_by_session_id(session_id):
-    options = Option.query.filter_by(session_id=session_id).all()
+def delete_all_options_by_session_id(voting_session_id):
+    options = Option.query.filter_by(voting_session_id=voting_session_id).all()
     if not options:
         return {"message": "Options not found"}
 

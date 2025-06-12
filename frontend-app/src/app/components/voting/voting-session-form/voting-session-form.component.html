@@ -26,15 +26,28 @@
     </div>
 </div>
 
-
-
 <div class="overlay" *ngIf="popupType === 'confirm'">
     <div class="popup-box1">
         <div class="popup-box2">
             <p>We are about to submit your vote. Are you sure about your option?</p>
             <div class="popup-buttons">
-                <button (click)="submitVote()">Yes</button>
+                <button (click)="confirmVote()">Yes</button>
                 <button (click)="closePopup()">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="overlay" *ngIf="popupType === 'uploadKey'">
+    <div class="popup-box1">
+        <div class="popup-box2">
+            <p>Please upload your voting key file (.json) to continue:</p>
+
+            <input type="file" (change)="onKeyFileUpload($event)" accept=".json" />
+
+            <div class="popup-buttons">
+                <button (click)="submitVote()" [disabled]="!uploadedKey">Submit Vote</button>
+                <button (click)="closePopup()">Cancel</button>
             </div>
         </div>
     </div>

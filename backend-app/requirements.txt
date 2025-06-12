@@ -42,3 +42,4 @@ PyJWT~=2.10.1
 typing~=3.7.4.3
 ecdsa~=0.19.1
 Flask-APScheduler~=1.13.1
+python-dateutil~=2.9.0.post0

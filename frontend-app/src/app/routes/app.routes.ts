@@ -1,5 +1,8 @@
-import {AuthGuard} from '../../auth-guard/auth.guard';
-import {AdminGuard} from '../../admin-guard/admin.guard';
+import {AdminGuard} from '../../guards/admin.guard';
+import {AuthGuard} from '../../guards/auth.guard';
+import {GuestGuard} from '../../guards/guest.guard';
+
+// import {AdminGuard} from '../../admin-guard/admin.guard';
 
 import {Routes} from '@angular/router';
 import {LoginComponent} from '../components/auth/login/login.component';
@@ -13,21 +16,25 @@ import {VotingSessionFormComponent} from '../components/voting/voting-session-fo
 import {VotingSessionsComponent} from '../components/voting/voting-sessions/voting-sessions.component';
 import {CreateVotingSessionComponent} from '../components/voting/create-voting-session/create-voting-session.component';
 import {UserProfilesComponent} from '../components/admin-user-profiles/user-profiles/user-profiles.component';
-import {ViewUserProfileComponent} from '../components/admin-user-profiles/view-user-profile/view-user-profile.component';
+import {
+    ViewUserProfileComponent
+} from '../components/admin-user-profiles/view-user-profile/view-user-profile.component';
 
 
 export const routes: Routes = [
-    {path: '', component: LoginComponent},
-    {path: 'login', component: LoginComponent},
-    {path: 'register-account', component: RegisterAccountComponent},
-    {path: 'register-profile', component: RegisterProfileComponent},
-    {path: 'forgot-password', component: ForgotPasswordComponent},
+    {path: '', component: LoginComponent, canActivate: [GuestGuard]},
+    {path: 'login', component: LoginComponent, canActivate: [GuestGuard]},
+    {path: 'register-account', component: RegisterAccountComponent, canActivate: [GuestGuard]},
+    {path: 'register-profile', component: RegisterProfileComponent, canActivate: [GuestGuard]},
+    {path: 'forgot-password', component: ForgotPasswordComponent, canActivate: [GuestGuard]},
+
     {path: 'profile', component: ViewProfileComponent, canActivate: [AuthGuard]},
     {path: 'change-password', component: ChangePasswordComponent, canActivate: [AuthGuard]},
-    {path: 'statistics', component: StatisticsComponent},
+    {path: 'statistics', component: StatisticsComponent, canActivate: [AuthGuard]},
     {path: 'voting-session-form/:id', component: VotingSessionFormComponent, canActivate: [AuthGuard]},
     {path: 'voting-sessions', component: VotingSessionsComponent, canActivate: [AuthGuard]},
-    {path: 'create-voting-sessions', component: CreateVotingSessionComponent, canActivate: [AdminGuard]},
+
+    {path: 'create-voting-session', component: CreateVotingSessionComponent, canActivate: [AdminGuard]},
     {path: 'user-profiles', component: UserProfilesComponent, canActivate: [AdminGuard]},
     {path: 'view-user-profile/:id', component: ViewUserProfileComponent, canActivate: [AdminGuard]},
 ];

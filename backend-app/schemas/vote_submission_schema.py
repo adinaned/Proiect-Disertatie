@@ -2,9 +2,8 @@ from pydantic import BaseModel
 
 
 class VoteSubmissionResponse(BaseModel):
-    id: int
-    session_id: int
-    has_voted: bool
+    id: str
+    voting_session_id: str
 
     class Config:
         from_attributes = True

@@ -3,8 +3,8 @@ from pydantic import BaseModel
 
 
 class EmailResponse(BaseModel):
-    id: int
-    user_id: int
+    id: str
+    user_id: str
     email_address: str
     is_verified: bool
     created_at: datetime

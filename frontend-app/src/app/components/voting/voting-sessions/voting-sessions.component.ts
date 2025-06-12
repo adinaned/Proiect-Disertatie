@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { NgClass, NgForOf, NgIf } from '@angular/common';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {NgClass, NgForOf, NgIf} from '@angular/common';
 
-import { VotingSessionsService } from '../../../services/voting/voting-sessions.service';
-import { VoteService } from '../../../services/voting/votes/vote.service';
+import {VotingSessionsService} from '../../../services/voting/voting-sessions.service';
+import {VoteService} from '../../../services/voting/votes/vote.service';
+import {AuthService} from "../../../services/auth/auth.service";
+import {UserService} from "../../../services/users/user.service";
+import {LsagService} from "../../../services/voting/votes/lsag.service";
 
 @Component({
     selector: 'app-voting-sessions',
@@ -13,164 +16,202 @@ import { VoteService } from '../../../services/voting/votes/vote.service';
     styleUrls: ['./voting-sessions.component.css']
 })
 export class VotingSessionsComponent implements OnInit {
-    sessions: any[] = [];
+    votingSessions: any[] = [];
     isAdmin: boolean = false;
     profileStatus: string = '';
     profileActivatedAt: Date | null = null;
 
     constructor(
         private router: Router,
-        private votingSessionService: VotingSessionsService,
-        private voteService: VoteService
-    ) {}
-
-    ngOnInit() {
-        this.checkIfUserIsAdmin();
-
-        const userData = localStorage.getItem('user');
-        const email = userData ? JSON.parse(userData)?.email : null;
-        if (!email) return;
-
-        this.loadUserProfileStatus(email);
+        private votingSessionsService: VotingSessionsService,
+        private voteService: VoteService,
+        private authService: AuthService,
+        private userService: UserService,
+        private lsagService: LsagService
+    ) {
     }
 
-    loadUserProfileStatus(email: string) {
-        this.votingSessionService.getUserIdByEmail(email).subscribe({
-            next: (emailRes) => {
-                const userId = emailRes?.user_id;
-                if (!userId) return;
+    ngOnInit() {
+        this.authService.getCurrentUserFromCookie().then(user => {
+            console.log('Current user:', user.user_id);
+            this.checkIfUserIsAdmin(user.user_id);
+            this.loadUserProfileStatus(user.user_id);
+        });
+    }
 
-                this.votingSessionService.getProfileStatus(userId).subscribe({
-                    next: (profileRes) => {
-                        this.profileStatus = profileRes?.name?.toUpperCase();
-                        this.profileActivatedAt = profileRes?.updated_at ? new Date(profileRes.updated_at) : null;
-                        this.loadVotingSessions();
-                    },
-                    error: () => console.error('Error fetching profile status.')
-                });
+    loadUserProfileStatus(userId: number) {
+        this.votingSessionsService.getProfileStatus(userId).subscribe({
+            next: (profileRes) => {
+                this.profileStatus = profileRes?.name?.toUpperCase();
+                this.profileActivatedAt = new Date(profileRes.updated_at);
+                this.loadVotingSessions();
             },
-            error: () => console.error('Error fetching user ID from email.')
+            error: () => console.error('Error fetching profile status.')
         });
     }
 
     loadVotingSessions() {
-        this.votingSessionService.getAllVotingSessions().subscribe({
-            next: (data) => {
-                const now = new Date();
+        if (this.profileStatus !== 'ACTIVE') {
+            console.warn('User profile is not ACTIVE, voting sessions will not be shown.');
+            this.votingSessions = [];
+            return;
+        }
 
-                let filteredSessions = data;
+        this.authService.getCurrentUserFromCookie().then(currentUser => {
+            const userId = currentUser?.user_id;
+            if (!userId) {
+                console.error('User ID not found in cookie.');
+                return;
+            }
 
-                if (this.profileStatus === 'OPEN') {
-                    filteredSessions = [];
-                } else if (this.profileStatus === 'ACTIVE' && this.profileActivatedAt) {
-                    filteredSessions = data.filter((session: any) => {
-                        const start = new Date(session.start_datetime);
-                        return start > this.profileActivatedAt!;
-                    });
+            this.userService.getUserById(userId).subscribe(userDetails => {
+                const organizationId = userDetails?.organization_id;
+                const roleId = userDetails?.role_id;
+
+                if (!organizationId) {
+                    console.error('Organization ID not found for user.');
+                    return;
                 }
 
-                this.sessions = filteredSessions
-                    .map((session: any) => {
-                        const start = new Date(session.start_datetime);
-                        const end = new Date(session.end_datetime);
-                        let status = 'closed';
-                        let time_remaining = '';
+                const now = new Date();
 
-                        if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
-                            if (now < start) {
-                                status = 'upcoming';
-                                time_remaining = 'Opening in ' + this.calculateTimeRemaining(start);
-                            } else if (now >= start && now <= end) {
-                                status = 'open';
-                                time_remaining = 'Voting session closes in ' + this.calculateTimeRemaining(end);
-                            } else {
-                                status = 'closed';
-                            }
+                let sessions$;
+                if (this.isAdmin) {
+                    sessions$ = this.votingSessionsService.getVotingSessionsByOrganization(organizationId);
+                } else {
+                    if (!roleId) {
+                        console.error('Role ID not found for non-admin user.');
+                        return;
+                    }
+                    sessions$ = this.votingSessionsService.getVotingSessionsByOrganizationAndRole(organizationId, roleId);
+                }
+
+                sessions$.subscribe({
+                    next: async (data) => {
+                        let filteredVotingSessions = data;
+
+                        if (this.profileStatus === 'OPEN') {
+                            filteredVotingSessions = [];
+                        } else if (this.profileStatus === 'ACTIVE' && this.profileActivatedAt && !this.isAdmin) {
+                            filteredVotingSessions = data.filter((session: any) => {
+                                const start = new Date(session.start_datetime);
+                                return start > this.profileActivatedAt!;
+                            });
                         }
 
-                        return {
-                            ...session,
-                            status,
-                            time_remaining,
-                            start_date: start,
-                            end_date: end,
-                            isVoterRegistered: this.isRegistered(session.id),
-                            stats_url: 'https://voting_stats'
-                        };
-                    });
+                        this.votingSessions = await Promise.all(
+                            filteredVotingSessions.map(async (session: any) => {
+                                const start = new Date(session.start_datetime);
+                                const end = new Date(session.end_datetime);
 
-                this.sortSessions();
-            },
-            error: (err) => {
-                console.error('Error fetching voting sessions:', err);
-            }
+                                let status = 'closed';
+                                let time_remaining = '';
+                                let ringSize = 0;
+
+                                try {
+                                    const ringResponse = await this.voteService.getRing(session.id).toPromise();
+                                    ringSize = ringResponse?.length || 0;
+
+                                    if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+                                        if (now < start) {
+                                            status = 'upcoming';
+                                            time_remaining = 'Opening in ' + this.calculateTimeRemaining(start);
+                                        } else if (now >= start && now <= end) {
+                                            if (ringSize < 3) {
+                                                status = 'closed';
+                                                time_remaining = 'Not enough participants to start the session.';
+                                            } else {
+                                                status = 'open';
+                                                time_remaining = 'Voting session closes in ' + this.calculateTimeRemaining(end);
+                                            }
+                                        }
+                                    }
+                                } catch (e) {
+                                    console.warn(`Failed to fetch ring for session ${session.id}:`, e);
+                                    status = 'closed';
+                                    time_remaining = 'Could not retrieve key ring.';
+                                }
+
+                                const isVoterRegistered = await this.isRegistered(session.id, userId);
+
+                                return {
+                                    ...session,
+                                    status,
+                                    time_remaining,
+                                    start_date: start,
+                                    end_date: end,
+                                    isVoterRegistered,
+                                    stats_url: 'https://voting_stats'
+                                };
+                            })
+                        );
+                        this.sortVotingSessions();
+                    },
+                    error: (err) => {
+                        console.error('Error fetching voting sessions:', err);
+                    }
+                });
+            });
+
+        }).catch(err => {
+            console.error('Error retrieving user from cookie:', err);
         });
     }
 
-    sortSessions(): void {
-        this.sessions = [
-            ...this.sessions
+    sortVotingSessions(): void {
+        this.votingSessions = [
+            ...this.votingSessions
                 .filter(s => s.status === 'upcoming' && !s.isVoterRegistered)
                 .sort((a, b) => a.start_date.getTime() - b.start_date.getTime()),
 
-            ...this.sessions
+            ...this.votingSessions
                 .filter(s => s.status === 'open' && s.isVoterRegistered)
                 .sort((a, b) => a.end_date.getTime() - b.end_date.getTime()),
 
-            ...this.sessions
+            ...this.votingSessions
                 .filter(s => s.status === 'upcoming' && s.isVoterRegistered)
                 .sort((a, b) => a.start_date.getTime() - b.start_date.getTime()),
 
-            ...this.sessions
+            ...this.votingSessions
                 .filter(s => s.status === 'open' && !s.isVoterRegistered)
                 .sort((a, b) => a.end_date.getTime() - b.end_date.getTime()),
 
-            ...this.sessions
+            ...this.votingSessions
                 .filter(s => s.status === 'closed')
                 .sort((a, b) => b.end_date.getTime() - a.end_date.getTime())
         ];
     }
 
 
-    checkIfUserIsAdmin(): void {
-        const userData = localStorage.getItem('user');
-        const email = userData ? JSON.parse(userData)?.email : null;
-        if (!email) return;
+    checkIfUserIsAdmin(user_id: any): void {
+        this.userService.getUserById(user_id).subscribe({
+            next: (userRes) => {
+                const roleId = userRes?.role_id;
+                if (!roleId) return;
 
-        this.votingSessionService.getUserIdByEmail(email).subscribe({
-            next: (emailRes) => {
-                const userId = emailRes?.user_id;
-                if (!userId) return;
-
-                this.votingSessionService.getUserById(userId).subscribe({
-                    next: (userRes) => {
-                        const roleId = userRes?.role_id;
-                        if (!roleId) return;
-
-                        this.votingSessionService.getRoleById(roleId).subscribe({
-                            next: (roleRes) => {
-                                const roleName = roleRes?.name?.toLowerCase();
-                                this.isAdmin = roleName === 'admin';
-                            },
-                            error: () => console.error('Error fetching role info.')
-                        });
+                this.userService.getRoleById(roleId).subscribe({
+                    next: (roleRes) => {
+                        const roleName = roleRes?.name?.toLowerCase();
+                        this.isAdmin = roleName === 'admin';
+                        console.log("User is admin?", this.isAdmin);
                     },
-                    error: () => console.error('Error fetching user info.')
+                    error: () => console.error('Error fetching role info.')
                 });
             },
-            error: () => console.error('Error fetching user ID from email.')
+            error: () => console.error('Error fetching user details.')
         });
     }
 
-    deleteSession(sessionId: number): void {
-        if (confirm('Are you sure you want to delete this voting session?')) {
-            this.votingSessionService.deleteVotingSession(sessionId).subscribe({
+
+    deleteVotingSession(votingSessionId: number): void {
+        if (confirm('Are you sure you want to delete this voting votingSession?')) {
+            this.votingSessionsService.deleteVotingSession(votingSessionId).subscribe({
                 next: () => {
-                    this.sessions = this.sessions.filter(s => s.id !== sessionId);
-                    console.log(`Session ${sessionId} deleted`);
+                    this.votingSessions = this.votingSessions.filter(s => s.id !== votingSessionId);
+                    console.log(`votingSession ${votingSessionId} deleted`);
                 },
                 error: err => {
-                    console.error('Failed to delete session:', err);
+                    console.error('Failed to delete voting session:', err);
                 }
             });
         }
@@ -202,96 +243,124 @@ export class VotingSessionsComponent implements OnInit {
         return parts.join(', ');
     }
 
-    handleVote(session: any) {
-        this.router.navigate(['/voting-session-form', session.id]);
+    handleVote(votingSession: any) {
+        this.router.navigate(['/voting-session-form', votingSession.id]);
     }
 
-    async handleAction(session: any) {
-        const isRegistered = this.isRegistered(session.id);
+    async handleAction(votingSession: any) {
+        const user = await this.authService.getCurrentUserFromCookie();
+        if (!user || !user.user_id) {
+            console.error('User not authenticated');
+            return;
+        }
 
-        if (session.status === 'upcoming' && !isRegistered) {
-            const keys = await this.voteService.generateKeypair();
-            this.savePrivateKeyToStorage(session.id, keys.privateKey);
-            this.savePublicKeyToStorage(session.id, keys.publicKey);
+        const userId = user.user_id;
+        const isRegistered = await this.isRegistered(votingSession.id, userId);
 
-            const userData = JSON.parse(localStorage.getItem('user') || '{}');
+        if (votingSession.status === 'upcoming' && !isRegistered) {
+            const keys = await this.lsagService.generateKeypair();
 
-            this.voteService.getEmailObj(userData.email).subscribe({
-                next: (response) => {
-                    const userId = response.user_id;
+            this.authService.getCurrentUserFromCookie().then(user => {
+                const userId = user.user_id;
+                this.voteService.submitPublicKey(votingSession.id, userId, keys.publicKey).subscribe({
+                    next: () => {
+                        console.log('Public key sent to backend.');
+                        votingSession.isVoterRegistered = true;
+                        this.sortVotingSessions();
 
-                    this.voteService.submitPublicKey(session.id, userId, keys.publicKey).subscribe({
-                        next: () => {
-                            console.log('Public key sent to backend.');
-                            session.isVoterRegistered = true;
-                            this.sortSessions();
-                        },
-                        error: (err) => console.error('Error sending public key:', err)
-                    });
-                },
-                error: (err) => {
-                    console.error('Could not retrieve user ID from email:', err);
-                }
+                        alert("Your voting key has been generated. Save the file and don't lose it!");
+
+                        const keyFile = {
+                            voting_session_id: votingSession.id,
+                            public_key: {
+                                x: keys.publicKey.x.toString(),
+                                y: keys.publicKey.y.toString(),
+                            },
+                            private_key: keys.privateKey.toString()
+                        };
+
+                        const jsonBlob = new Blob([JSON.stringify(keyFile, null, 2)], {type: 'application/json'});
+                        const url = window.URL.createObjectURL(jsonBlob);
+
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = `voting_key_${votingSession.id}.json`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    },
+                    error: (err) => console.error('Error sending public key:', err)
+                });
+            }).catch(err => {
+                console.error('Error getting user from cookie:', err);
             });
 
             return;
         }
 
-        if (session.status === 'open' && isRegistered) {
-            this.handleVote(session);
+        if (votingSession.status === 'open' && isRegistered) {
+            this.handleVote(votingSession);
             return;
         }
 
-        console.warn('No action possible for this session.');
+        console.warn('No action possible for this votingSession.');
     }
 
-    getButtonClass(session: any): string {
-        return this.isButtonDisabled(session) ? 'vote-btn greyed-out' : 'vote-btn';
+    getButtonClass(votingSession: any): string {
+        if (!this.isAdmin) {
+            return this.isButtonDisabled(votingSession) ? 'vote-btn greyed-out' : 'vote-btn';
+        } else {
+            return votingSession.status !== 'upcoming' ? 'delete-btn greyed-out' : 'delete-btn';
+        }
     }
 
-    getButtonLabel(session: any): string {
-        const isRegistered = session.isVoterRegistered;
+    getButtonLabel(votingSession: any): string {
+        const isRegistered = votingSession.isVoterRegistered;
 
-        if (session.status === 'closed') {
+        if (votingSession.status === 'closed') {
             return 'Closed';
         }
-        if (session.status === 'upcoming') {
+        if (votingSession.status === 'upcoming') {
             return isRegistered ? 'Vote' : 'Register to Vote';
         }
-        if (session.status === 'open') {
+        if (votingSession.status === 'open') {
             return isRegistered ? 'Vote' : 'Not Registered';
         }
-        if (session.status === 'submitted') {
+        if (votingSession.status === 'submitted') {
             return 'Voted';
         }
 
         return 'Unavailable';
     }
 
-    isButtonDisabled(session: any): boolean {
-        const isRegistered = session.isVoterRegistered;
+    isButtonDisabled(votingSession: any): boolean {
+        const isRegistered = votingSession.isVoterRegistered;
 
-        if (session.status === 'open') {
+        if (votingSession.status === 'open') {
             return !isRegistered;
         }
-        if (session.status === 'upcoming') {
+        if (votingSession.status === 'upcoming') {
             return isRegistered;
         }
 
         return true;
     }
 
-    isRegistered(sessionId: number): boolean {
-        return !!localStorage.getItem(`privateKey_${sessionId}`);
-    }
-
-    async savePrivateKeyToStorage(sessionId: number, privateKey: string) {
-        localStorage.setItem(`privateKey_${sessionId}`, privateKey);
-        console.log(`Private key saved for session ${sessionId}`);
-    }
-
-    async savePublicKeyToStorage(sessionId: number, publicKey: { x: string; y: string }) {
-        localStorage.setItem(`publicKey_${sessionId}`, JSON.stringify(publicKey));
-        console.log(`Public key sent for session ${sessionId}`);
+    isRegistered(sessionId: string, userId: string): Promise<boolean> {
+        return new Promise((resolve) => {
+            this.voteService.checkIfRegistered(sessionId, userId).subscribe({
+                next: (res) => {
+                    resolve(res.status === 200);
+                },
+                error: (err) => {
+                    if (err.status === 404) {
+                        resolve(false);
+                    } else {
+                        console.error('Error checking registration:', err);
+                        resolve(false);
+                    }
+                }
+            });
+        });
     }
 }

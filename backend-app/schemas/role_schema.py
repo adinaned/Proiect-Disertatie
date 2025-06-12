@@ -2,9 +2,9 @@ from pydantic import BaseModel
 
 
 class RoleResponse(BaseModel):
-    id: int
+    id: str
     name: str
-    organization_id: int
+    organization_id: str
 
     class Config:
         from_attributes = True

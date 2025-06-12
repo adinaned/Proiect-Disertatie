@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, switchMap, forkJoin} from "rxjs";
+import {Observable, switchMap, forkJoin, map} from "rxjs";
 import {HttpClient} from '@angular/common/http';
 
 @Injectable({providedIn: 'root'})
@@ -9,24 +9,28 @@ export class VotingSessionsService {
     constructor(private http: HttpClient) {
     }
 
-    getAllVotingSessions(): Observable<any> {
-        return this.http.get(`${this.baseUrl}/voting_sessions`);
+    getVotingSessionsByOrganization(organizationId: string): Observable<any[]> {
+        return this.http.get<any>(`${this.baseUrl}/voting_sessions/organization/${organizationId}`).pipe(
+            map(res => res.data)
+        );
+    }
+
+    getVotingSessionsByOrganizationAndRole(organizationId: string, roleId: string): Observable<any[]> {
+        return this.http.get<any>(`${this.baseUrl}/voting_sessions/organization/${organizationId}/role/${roleId}`).pipe(
+            map(res => res.data)
+        );
     }
 
     getUserIdByEmail(email: string) {
-        return this.http.get<any>(`http://127.0.0.1:5000/emails/${email}`);
-    }
-
-    getUserById(userId: number) {
-        return this.http.get<any>(`http://127.0.0.1:5000/users/${userId}`);
+        return this.http.get<any>(`${this.baseUrl}/emails/${email}`).pipe(
+            map(res => res.data)
+        )
     }
 
     getProfileStatus(userId: number) {
-        return this.http.get<any>(`http://127.0.0.1:5000/profile_statuses/${userId}`);
-    }
-
-    getRoleById(roleId: number) {
-        return this.http.get<any>(`http://127.0.0.1:5000/roles/${roleId}`);
+        return this.http.get<any>(`${this.baseUrl}/profile_statuses/${userId}`).pipe(
+            map(res => res.data)
+        )
     }
 
     deleteVotingSession(votingSessionId: number): Observable<any> {
@@ -38,11 +42,15 @@ export class VotingSessionsService {
         );
     }
 
-    deleteOptions(votingSessionId: number): Observable<any> {
-        return this.http.delete(`${this.baseUrl}/options/session/${votingSessionId}`);
+    deleteOptions(votingSessionId: number) {
+        return this.http.delete<any>(`${this.baseUrl}/options/voting_session/${votingSessionId}`).pipe(
+            map(res => res.data)
+        )
     }
 
-    deletePublicKeys(votingSessionId: number): Observable<any> {
-        return this.http.delete(`${this.baseUrl}/public_keys/${votingSessionId}`);
+    deletePublicKeys(votingSessionId: number) {
+        return this.http.delete<any>(`${this.baseUrl}/public_keys/voting_session/${votingSessionId}`).pipe(
+            map(res => res.data)
+        )
     }
 }

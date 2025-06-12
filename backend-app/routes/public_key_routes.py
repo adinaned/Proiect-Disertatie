@@ -9,11 +9,6 @@ def create_public_key_endpoint():
     return create()
 
 
-@public_key_routes.route('/public_keys/<int:session_id>/<int:user_id>', methods=['GET'])
-def get_key_ring_by_session_id_by_user_id_endpoint(session_id, user_id):
-    return get_by_session_id_and_user_id(session_id, user_id)
-
-
-@public_key_routes.route('/public_keys/<int:session_id>', methods=['DELETE'])
-def delete_public_key_session_id(session_id):
-    return delete_by_session_id(session_id)
+@public_key_routes.route('/public_keys/<string:voting_session_id>', methods=['GET'])
+def get_key_ring_by_session_id_endpoint(voting_session_id):
+    return get_by_session_id(voting_session_id)

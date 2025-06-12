@@ -36,15 +36,24 @@
 
 
             <div class="row">
-                <select [(ngModel)]="organizationId" name="organization" required>
-                    <option [ngValue]="null" disabled selected>Organization*</option>
-                    <option *ngFor="let org of organizations" [value]="org.id">{{ org.name }}</option>
-                </select>
+                <div class="form-item">
+                    <label>Organization</label>
+                    <input
+                            type="text"
+                            [value]="organizationName"
+                            class="readonly-select-style"
+                            readonly
+                            disabled
+                    />
+                </div>
 
-                <select [(ngModel)]="roleId" name="role" required>
-                    <option [ngValue]="null" disabled hidden>Role*</option>
-                    <option *ngFor="let role of roles" [ngValue]="role.id">{{ role.name }}</option>
-                </select>
+                <div class="form-item">
+                    <label>Role</label>
+                    <select [(ngModel)]="roleId" name="role" required>
+                        <option [ngValue]="''" disabled hidden>Select Role</option>
+                        <option *ngFor="let role of roles" [ngValue]="role.id">{{ role.name }}</option>
+                    </select>
+                </div>
             </div>
 
             <div class="buttons">

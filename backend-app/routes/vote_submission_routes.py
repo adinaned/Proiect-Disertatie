@@ -9,11 +9,11 @@ def create_new_vote_submission_endpoint():
     return create()
 
 
-@vote_submission_routes.route('/vote_submission_submissions', methods=['GET'])
-def get_vote_submission_submissions_endpoint():
-    return get_all()
+@vote_submission_routes.route('/vote_submission_submissions/voting_session/<string:voting_session_id>', methods=['GET'])
+def get_vote_submission_submissions_endpoint(voting_session_id):
+    return get_all_by_session_id(voting_session_id)
 
 
-@vote_submission_routes.route('/vote_submission_submissions/<int:vote_submission_id>', methods=['GET'])
+@vote_submission_routes.route('/vote_submission_submissions/<string:vote_submission_id>', methods=['GET'])
 def get_vote_submission_by_id_endpoint(vote_submission_id):
     return get_by_id(vote_submission_id)

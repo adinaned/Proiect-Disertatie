@@ -2,6 +2,8 @@ import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
+import {forkJoin} from 'rxjs';
+
 import {RegisterProfileService} from '../../../services/auth/register-profile.service';
 import {RegisterAccountService} from '../../../services/auth/register-account.service';
 
@@ -14,69 +16,88 @@ import {RegisterAccountService} from '../../../services/auth/register-account.se
 
 export class RegisterProfileComponent {
     date_of_birth = '';
-    country_id = 1;
+    country = '';
     city = '';
     address = '';
     national_id = '';
-    organization_id = 1;
-    role_id = 1;
-    profile_status_id = 1;
+    organization = '';
+    countries: any[] = [];
+
 
     constructor(
         private router: Router,
-        private profileService: RegisterProfileService,
-        private accountService: RegisterAccountService,
+        private registerAccountService: RegisterAccountService,
+        private registerProfileService: RegisterProfileService,
         private userDraft: RegisterAccountService
-    ) {}
-
-    ngOnInit(): void {
-        if (!this.accountService.hasValidUserData()) {
-            console.log("Please complete the first step before continuing.");
-            this.router.navigate(['/register-account']).then(success => {
-                if (success) {
-                    console.log('Please complete the first step before continuing.');
-                } else {
-                    console.warn('Please complete the first step before continuing.');
-                }
-            });
-        }
+    ) {
     }
 
-    handleSubmit(): void {
-        const draftData = this.userDraft.getProfileDraftData();
-        const passwordData = this.userDraft.getPasswordData();
-        const emailData = this.userDraft.getEmailData();
+    ngOnInit(): void {
+        if (!this.registerAccountService.hasValidUserData()) {
+            console.warn("Please complete the first step before continuing.");
+            this.router.navigate(['/register-account']);
+        }
 
-        this.validateSubmission(draftData, passwordData, emailData);
-
-        const profileData = {
-            first_name: draftData.first_name,
-            last_name: draftData.last_name,
-            date_of_birth: this.date_of_birth,
-            country_id: this.country_id,
-            city: this.city,
-            address: this.address,
-            national_id: Number(this.national_id),
-            organization_id: this.organization_id,
-            role_id: this.role_id,
-            profile_status_id: this.profile_status_id
-        };
-
-        console.log('Profile:', profileData);
-
-        this.profileService.registerProfile(profileData, passwordData, emailData).subscribe({
-            next: () => {
-                this.userDraft.clear();
-                this.router.navigate(['/login']);
+        this.registerProfileService.getAllCountries().subscribe({
+            next: (response) => {
+                this.countries = response.data || [];
             },
             error: (err) => {
-                console.error('Registration error:', err);
-                alert('Registration failed.');
+                console.error('Failed to load countries:', err);
             }
         });
     }
 
-    validateSubmission(draftData: any, passwordData: any, emailData: any): void {
+    handleSubmit(): void {
+        const draftData = this.userDraft.getProfileDraftData();
+
+        try {
+            this.validateSubmission(draftData);
+        } catch (e) {
+            console.error('Validation failed:', e);
+            alert('Invalid submission data.');
+            return;
+        }
+
+        forkJoin({
+            country: this.registerProfileService.getCountryByName(this.country),
+            organization: this.registerProfileService.getOrganizationByName(this.organization)
+        }).subscribe({
+            next: ({ country, organization }) => {
+                const profileData = {
+                    first_name: draftData.first_name,
+                    last_name: draftData.last_name,
+                    date_of_birth: new Date(this.date_of_birth).toISOString(),
+                    country_id: country?.data?.id,
+                    city: this.city,
+                    address: this.address,
+                    national_id: Number(this.national_id),
+                    organization_id: organization?.data?.id,
+                    email_address: draftData.email_address,
+                    password: draftData.password
+                };
+
+                console.log('Profile data ready for submission:', profileData);
+
+                this.registerProfileService.registerProfile(profileData).subscribe({
+                    next: () => {
+                        this.userDraft.clear();
+                        this.router.navigate(['/login']);
+                    },
+                    error: (err) => {
+                        console.error('Registration error:', err);
+                        alert('Registration failed. Please try again later.');
+                    }
+                });
+            },
+            error: (err) => {
+                console.error('Error retrieving country or organization:', err);
+                alert('Failed to retrieve organization or country. Please check your input.');
+            }
+        });
+    }
+
+    validateSubmission(draftData: any): void {
         if (!draftData.first_name || !draftData.last_name) {
             alert('Last name and first name are mandatory.');
             return;
@@ -87,7 +108,7 @@ export class RegisterProfileComponent {
             return;
         }
 
-        if (!this.country_id || this.country_id <= 0) {
+        if (!this.country) {
             alert('Country is required.');
             return;
         }
@@ -102,12 +123,12 @@ export class RegisterProfileComponent {
             return;
         }
 
-        if (!emailData?.email_address) {
+        if (!draftData.email_address) {
             alert('Invalid or missing email.');
             return;
         }
 
-        if (!passwordData?.password || passwordData.password.length < 4) {
+        if (!draftData.password || draftData.password.length < 4) {
             alert('Password is too short.');
             return;
         }

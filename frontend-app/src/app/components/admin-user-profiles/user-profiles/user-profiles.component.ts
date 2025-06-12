@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { NgClass, NgForOf } from '@angular/common';
-import { forkJoin } from 'rxjs';
-import { UserService } from '../../../services/users/user.service';
-import {routes} from "../../../routes/app.routes";
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {NgClass, NgForOf, NgIf} from '@angular/common';
+import {forkJoin, map} from 'rxjs';
+import {UserService} from '../../../services/users/user.service';
+import {AuthService} from '../../../services/auth/auth.service';
 
 @Component({
     selector: 'app-user-profiles',
     standalone: true,
-    imports: [NgClass, NgForOf],
+    imports: [NgClass, NgForOf, NgIf],
     templateUrl: './user-profiles.component.html',
     styleUrls: ['./user-profiles.component.css']
 })
@@ -17,39 +17,68 @@ export class UserProfilesComponent implements OnInit {
 
     constructor(
         private router: Router,
-        private userService: UserService
-    ) {}
+        private userService: UserService,
+        private authService: AuthService
+    ) {
+    }
 
     ngOnInit() {
-        this.userService.getUsers().subscribe((users) => {
+        this.authService.getCurrentUserFromCookie().then(currentUser => {
+            if (!currentUser?.user_id) {
+                console.error('User ID not found in cookie.');
+                return;
+            }
 
-            this.userService.getRoles().subscribe((roles) => {
-                const statusRequests = users.map(user =>
-                    this.userService.getProfileStatuses(user.id)
-                );
+            this.userService.getUserById(currentUser.user_id).subscribe(userData => {
+                const organizationId: string = userData?.organization_id;
+                if (!organizationId) {
+                    console.error('Organization ID not found in user data.');
+                    return;
+                }
 
-                forkJoin(statusRequests).subscribe((statusesArray) => {
+                this.userService.getUsersByOrganizationId(organizationId).subscribe((users: any[]) => {
+                    const filteredUsers = users.filter(u => u.id !== currentUser.user_id);
 
-                    this.users = users.map((user, index) => {
-                        const role = roles.find(r => r.id === user.role_id)?.name ?? 'Unknown';
-                        const statusObj = statusesArray[index];
-                        const profileStatus = statusObj?.name ?? 'N/A';
+                    const combinedRequests = filteredUsers.map((user: any) => {
+                        if (!user.role_id) {
+                            return forkJoin({
+                                status: this.userService.getProfileStatuses(user.id)
+                            }).pipe(
+                                map(({ status }) => ({
+                                    ...user,
+                                    firstName: user.first_name,
+                                    lastName: user.last_name,
+                                    role: 'None',
+                                    profile_status: status?.data?.name || 'N/A'
+                                }))
+                            );
+                        }
 
-                        return {
-                            ...user,
-                            firstName: user.first_name,
-                            lastName: user.last_name,
-                            role,
-                            profile_status: profileStatus
-                        };
+                        return forkJoin({
+                            role: this.userService.getRoleById(user.role_id),
+                            status: this.userService.getProfileStatuses(user.id)
+                        }).pipe(
+                            map(({ role, status }) => ({
+                                ...user,
+                                firstName: user.first_name,
+                                lastName: user.last_name,
+                                role: role?.name || 'Unknown',
+                                profile_status: status?.data?.name || 'N/A'
+                            }))
+                        );
+                    });
+
+                    forkJoin(combinedRequests).subscribe((enrichedUsers: any[]) => {
+                        this.users = enrichedUsers;
                     });
                 });
             });
+        }).catch(err => {
+            console.error('Failed to load current user from cookie:', err);
         });
     }
 
     viewUser(userId: number) {
-        console.log('View user clicked. User ID:', userId);
         this.router.navigate([`/view-user-profile/${userId}`]);
     }
 

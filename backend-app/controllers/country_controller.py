@@ -1,5 +1,10 @@
 from flask import jsonify, request
-from services import (create_country, get_all_countries, get_country_by_id, update_country, delete_country)
+from services import (
+    create_country,
+    get_all_countries,
+    get_country_by_id,
+    get_country_by_name
+)
 
 
 def create():
@@ -13,36 +18,40 @@ def create():
         return jsonify({"message": str(e)}), 500
 
 
-def get_by_id(country_id):
-    country = get_country_by_id(country_id)
-    if country:
-        return jsonify(country), 200
-    return jsonify({"message": "Country not found"}), 404
-
-
-def get_all():
-    countries = get_all_countries()
-    if not countries:
-        return jsonify([]), 200
-    return jsonify(countries), 200
-
-
-def update(country_id):
+def get_by_id_or_name(country):
     try:
-        data = request.get_json()
-        updated_country = update_country(country_id, data)
-        return jsonify(updated_country), 200
+        if str(country).isdigit():
+            country_data = get_country_by_id(int(country))
+        else:
+            country_data = get_country_by_name(country)
+
+        if not country_data:
+            return jsonify({"message": "Country not found"}), 404
+
+        return jsonify({
+            "message": "Country retrieved successfully.",
+            "data": country_data
+        }), 200
+
     except ValueError as ve:
         return jsonify({"message": str(ve)}), 400
     except Exception as e:
-        return jsonify({"message": str(e)}), 500
+        return jsonify({"message": "Internal server error", "details": str(e)}), 500
 
 
-def delete(country_id):
+def get_all():
     try:
-        result = delete_country(country_id)
-        if result.get("message") == "Country not found":
-            return jsonify(result), 404
-        return jsonify(result), 200
+        countries = get_all_countries()
+        if not countries:
+            return jsonify({
+                "message": "No countries stored.",
+                "data": []
+            }), 200
+        return jsonify({
+            "message": "Countries retrieved successfully.",
+            "data": countries
+        }), 200
+    except ValueError as ve:
+        return jsonify({"message": str(ve)}), 400
     except Exception as e:
         return jsonify({"message": str(e)}), 500

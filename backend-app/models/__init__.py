@@ -14,3 +14,4 @@ from .user import User
 from .vote import Vote
 from .vote_submission import VoteSubmission
 from .voting_session import VotingSession
+from .voting_session_registration import VotingSessionRegistration

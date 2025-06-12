@@ -6,7 +6,10 @@ import {Router} from '@angular/router';
 import {VotingSessionFormService} from '../../../services/voting/voting-session-form.service';
 import {LsagService} from '../../../services/voting/votes/lsag.service';
 import {VoteService} from '../../../services/voting/votes/vote.service';
+import {AuthService} from '../../../services/auth/auth.service';
+import {UserService} from '../../../services/users/user.service';
 import {encryptPrivateKey} from '../../../services/voting/votes/private-key-encryption';
+import {firstValueFrom} from "rxjs";
 
 @Component({
     selector: 'app-display-voting-session',
@@ -20,26 +23,29 @@ import {encryptPrivateKey} from '../../../services/voting/votes/private-key-encr
 export class VotingSessionFormComponent {
     session: any;
     selectedOption: any = null;
-    popupType: 'confirm' | 'result' | null = null;
+    popupType: 'confirm' | 'uploadKey' | 'result' | null = null;
+    uploadedKey: any = null;
 
     constructor(
         private route: ActivatedRoute,
         private votingService: VotingSessionFormService,
         private router: Router,
         private LSAGService: LsagService,
-        private voteService: VoteService
+        private voteService: VoteService,
+        private authService: AuthService,
+        private userService: UserService
     ) {
     }
 
     ngOnInit(): void {
-        const sessionId = Number(this.route.snapshot.paramMap.get('id'));
-        if (!sessionId) return;
+        const votingSessionId = String(this.route.snapshot.paramMap.get('id'));
+        if (!votingSessionId) return;
 
-        this.votingService.getSessionById(sessionId).subscribe({
-            next: (sessionData) => {
+        this.votingService.getSessionById(votingSessionId).subscribe({
+            next: (sessionData: any) => {
                 this.session = sessionData;
 
-                this.votingService.getOptionsBySessionId(sessionId).subscribe({
+                this.votingService.getOptionsByVotingSessionId(votingSessionId).subscribe({
                     next: (optionsData) => {
                         console.log('Options received:', optionsData);
                         this.session.options = optionsData.map((opt: any) => ({
@@ -53,7 +59,7 @@ export class VotingSessionFormComponent {
                     }
                 });
             },
-            error: (err) => {
+            error: (err: any) => {
                 console.error('Failed to load voting session', err);
             }
         });
@@ -67,108 +73,85 @@ export class VotingSessionFormComponent {
         this.popupType = 'confirm';
     }
 
+    confirmVote() {
+        this.popupType = 'uploadKey';
+    }
+
     closePopup() {
         this.popupType = null;
     }
 
+    async onKeyFileUpload(event: any) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        try {
+            const fileContent = await file.text();
+            this.uploadedKey = JSON.parse(fileContent);
+            this.submitVote();
+        } catch (e) {
+            console.error("Error at reading the json file:", e);
+            alert("Invalid file.");
+        }
+    }
+
     async submitVote() {
         this.popupType = 'result';
-        const password = "1234";
 
-        if (!this.selectedOption) {
-            alert("Please select an option before submitting your vote.");
+        if (!this.selectedOption || !this.uploadedKey) {
+            alert("Select an option and upload the file containing the keys!");
             return;
         }
 
         const optionId = this.selectedOption.id;
+        const votingSessionId = String(this.route.snapshot.paramMap.get('id'));
 
-        const keys = await this.voteService.generateKeypair();
-        await this.savePrivateKeyToStorage(keys.privateKey, password);
-        await this.savePublicKeyToStorage(keys.publicKey, password);
+        try {
+            const ring = await firstValueFrom(this.voteService.getRing(votingSessionId));
+            if (!Array.isArray(ring) || ring.length === 0) {
+                console.error("Ring is empty or not valid");
+                return;
+            }
 
-        const sessionId = Number(this.route.snapshot.paramMap.get('id'));
+            const x = this.uploadedKey.public_key.x;
+            const y = this.uploadedKey.public_key.y;
 
-        const userData = JSON.parse(localStorage.getItem('user') || '{}');
+            console.log(ring)
+            const index = ring.findIndex(p => p.x === x && p.y === y);
+            const userKey = {
+                x: BigInt(x),
+                y: BigInt(y)
+            };
 
-        if (!userData.email) {
-            console.error("No email in localStorage user object");
-            return;
+            if (index === -1) {
+                console.error('Public key not found in ring.');
+                return;
+            } else {
+                console.log('Public key found in ring at index: ' + index);
+            }
+
+            const privateKey = BigInt(this.uploadedKey.private_key);
+
+            const message = `${optionId}`;
+            console.log("message", message);
+            const signature = await this.LSAGService.generateLSAGSignature(
+                message, ring, index, privateKey
+            );
+
+            const keyImage = this.LSAGService.generateKeyImage(userKey, privateKey);
+
+            await firstValueFrom(this.voteService.submitVote({
+                voting_session_id: votingSessionId,
+                option_id: optionId,
+                signature,
+                key_image: keyImage
+            }));
+
+            console.log("Vote submitted successfully");
+
+        } catch (err) {
+            console.error("Error in vote submission flow:", err);
         }
-
-        this.voteService.getRing(sessionId).subscribe({
-            next: async (res) => {
-                const ring = res.ring;
-                console.log("Ring:" + ring);
-
-                this.voteService.getEmailObj(userData.email).subscribe({
-                    next: (response) => {
-                        const userId = response.user_id;
-
-                        this.voteService.submitPublicKey(sessionId, userId, keys.publicKey).subscribe({
-                            next: () => {
-                                console.log('Public key sent to backend.');
-
-                                this.voteService.getPublicKey(sessionId, userId).subscribe({
-                                    next: async (publicKey) => {
-                                        const userKey = {
-                                            x: publicKey.public_key_x,
-                                            y: publicKey.public_key_y
-                                        };
-                                        console.log("User public key from backend:", userKey);
-
-                                        const index = ring.findIndex(p =>
-                                            p.x.toLowerCase() === userKey.x.toLowerCase() &&
-                                            p.y.toLowerCase() === userKey.y.toLowerCase()
-                                        );
-
-                                        if (index === -1) {
-                                            console.error('Public key not found in ring.');
-                                            return;
-                                        }
-
-                                        const message = `${sessionId}|${optionId}`;
-                                        const signature = await this.LSAGService.generateLSAGSignature(
-                                            message,
-                                            ring,
-                                            index,
-                                            keys.privateKey
-                                        );
-                                        console.log("Signature:", signature);
-
-                                        const keyImage = this.LSAGService.generateKeyImage(userKey, keys.privateKey);
-                                        console.log("Key image:", keyImage);
-
-                                        this.voteService.submitVote({
-                                            session_id: sessionId,
-                                            option_id: optionId,
-                                            signature,
-                                            key_image: keyImage
-                                        }).subscribe({
-                                            next: () => console.log('Vote submitted successfully'),
-                                            error: err => console.error('Failed to submit vote:', err)
-                                        });
-                                    },
-                                    error: err => console.error('Failed to fetch public key:', err)
-                                });
-                            },
-                            error: err => console.error('Error sending public key:', err)
-                        });
-                    },
-                    error: err => console.error('Could not retrieve user ID from email:', err)
-                });
-            },
-            error: err => console.error('Failed to fetch ring:', err)
-        });
-    }
-
-    async savePrivateKeyToStorage(privateKey: string, password: string) {
-        // const encrypted = await encryptPrivateKey(privateKey, password);
-        // localStorage.setItem('privateKey', encrypted);
-        localStorage.setItem('privateKey', privateKey);
-    }
-
-    async savePublicKeyToStorage(publicKey: { x: string; y: string }, password?: string): Promise<void> {
-        localStorage.setItem('publicKey', JSON.stringify(publicKey));
     }
 
     backToHomepage() {

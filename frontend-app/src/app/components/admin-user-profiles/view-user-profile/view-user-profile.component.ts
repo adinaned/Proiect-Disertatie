@@ -1,10 +1,11 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {FormsModule} from '@angular/forms';
-import {CommonModule} from '@angular/common';
-import {catchError, of, switchMap} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
-import {NgIf} from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { catchError, of, switchMap, map } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { NgIf } from '@angular/common';
+import { UserService } from '../../../services/users/user.service';
 
 @Component({
     selector: 'app-view-user-profile',
@@ -17,24 +18,24 @@ export class ViewUserProfileComponent implements OnInit {
     email: string = '';
     country: string = '';
     organization: string = '';
-    role: { id: number; name: string } | null = null;
-    originalRole: { id: number; name: string } | null = null;
-    roles: { id: number; name: string }[] = [];
-    roleId: number | null = null;
+    role: { id: string; name: string } | null = null;
+    originalRole: { id: string; name: string } | null = null;
+    roles: { id: string; name: string }[] = [];
+    roleId: string | null = null;
     profileStatus: string = '';
     statusOptions: string[] = ['active', 'closed', 'suspended'];
-    userId: number | null = null;
+    userId: string | null = null;
     currentProfileStatus: string = '';
     selectedProfileStatus: string = '';
     hasUnsavedChanges = false;
     originalProfileStatus: string = '';
+    dateOfBirth: string = '';
 
     constructor(
-        private router: Router,
         private route: ActivatedRoute,
-        private http: HttpClient
-    ) {
-    }
+        private http: HttpClient,
+        private userService: UserService,
+    ) { }
 
     ngOnInit(): void {
         const userId = this.route.snapshot.paramMap.get('id') || '';
@@ -45,53 +46,66 @@ export class ViewUserProfileComponent implements OnInit {
 
         this.http.get<any>(`http://127.0.0.1:5000/emails/user/${userId}`)
             .pipe(
-                switchMap(emailResponse => {
-                    const email_address = emailResponse?.email_address;
+                map(res => res?.data),
+                switchMap((emailData: any) => {
+                    const email_address = emailData?.email_address;
                     if (!email_address) throw new Error('Email Address not found');
                     this.email = email_address;
 
-                    return this.http.get<any>(`http://127.0.0.1:5000/users/${userId}`);
+                    return this.http.get<any>(`http://127.0.0.1:5000/users/${userId}`).pipe(map(res => res?.data));
                 }),
                 catchError(error => {
                     console.error('API error:', error);
                     return of(null);
                 })
             )
-            .subscribe(userData => {
-                if (!userData) return;
+            .subscribe((user: any) => {
+                if (!user) return;
 
-                this.profile = userData;
-                this.userId = userData.id;
-                this.roleId = userData.role_id;
+                this.profile = user;
+                if (user.date_of_birth) {
+                    const date = new Date(user.date_of_birth);
+                    this.dateOfBirth = date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                }
+                this.userId = user.id;
+                this.roleId = user.role_id;
 
-                this.getCountryName(userData.country_id);
-                this.getOrganizationName(userData.organization_id);
-                this.getRoleName(userData.role_id);
+                this.getCountryName(user.country_id);
+                this.getOrganizationName(user.organization_id);
+                this.getRoleName(user.role_id, user.organization_id);
 
-                this.http.get<any>(`http://127.0.0.1:5000/profile_statuses/${userData.id}`)
-                    .subscribe(status => {
-                        this.profile.profile_status = status?.name || '';
-                        this.profileStatus = this.profile.profile_status;
-                        this.currentProfileStatus = this.profile.profile_status;
-                        this.originalProfileStatus = this.profile.profile_status;
+                this.http.get<any>(`http://127.0.0.1:5000/profile_statuses/${user.id}`)
+                    .pipe(map(res => res?.data))
+                    .subscribe((status: any) => {
+                        const statusName = status?.name || '';
+                        this.profile.profile_status = statusName;
+                        this.profileStatus = statusName;
+                        this.currentProfileStatus = statusName;
+                        this.originalProfileStatus = statusName;
                         this.selectedProfileStatus = '';
                     });
             });
     }
 
-    getCountryName(id: number) {
+    private getCountryName(id: string) {
         this.http.get<any>(`http://127.0.0.1:5000/countries/${id}`)
+            .pipe(map(res => res?.data))
             .subscribe(res => this.country = res?.name || '');
     }
 
-    getOrganizationName(id: number) {
+    private getOrganizationName(id: string) {
         this.http.get<any>(`http://127.0.0.1:5000/organizations/${id}`)
+            .pipe(map(res => res?.data))
             .subscribe(res => this.organization = res?.name || '');
     }
 
-    getRoleName(currentRoleId: number) {
-        this.http.get<any[]>(`http://127.0.0.1:5000/roles`)
-            .subscribe(allRoles => {
+    private getRoleName(currentRoleId: string, organizationId: string) {
+        this.userService.getRolesByOrganizationId(organizationId)
+            .subscribe((allRoles: { id: string; name: string }[]) => {
                 this.roles = allRoles;
 
                 const matched = allRoles.find(r => r.id === currentRoleId);
@@ -120,7 +134,7 @@ export class ViewUserProfileComponent implements OnInit {
                 name: this.selectedProfileStatus
             };
 
-            this.http.put(`http://127.0.0.1:5000/profile_statuses/${this.userId}`, payload_profile_status)
+            this.http.patch(`http://127.0.0.1:5000/profile_statuses/${this.userId}`, payload_profile_status)
                 .subscribe({
                     next: () => {
                         this.currentProfileStatus = this.selectedProfileStatus!;
@@ -141,7 +155,7 @@ export class ViewUserProfileComponent implements OnInit {
                 role_id: this.role?.id
             };
 
-            this.http.put(`http://127.0.0.1:5000/users/${this.userId}`, payload_role)
+            this.http.patch(`http://127.0.0.1:5000/users/${this.userId}`, payload_role)
                 .subscribe({
                     next: () => {
                         this.originalRole = {
@@ -161,8 +175,8 @@ export class ViewUserProfileComponent implements OnInit {
         this.checkForUnsavedChanges();
     }
 
-    checkForUnsavedChanges() {
-        const statusChanged = this.selectedProfileStatus && this.selectedProfileStatus !== this.originalProfileStatus;
+    public checkForUnsavedChanges() {
+        const statusChanged = !!this.selectedProfileStatus && this.selectedProfileStatus !== this.originalProfileStatus;
         const roleChanged = this.role !== this.originalRole;
 
         this.hasUnsavedChanges = statusChanged || roleChanged;

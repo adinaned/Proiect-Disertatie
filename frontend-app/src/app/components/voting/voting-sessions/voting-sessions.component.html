@@ -1,40 +1,53 @@
-<div class="container1">
-    <h2>Voting sessions</h2>
+<div class="container1" *ngIf="profileStatus === 'ACTIVE'; else notActive">
+    <h2>Voting Sessions</h2>
     <div class="container2">
-        <div class="session" *ngFor="let session of sessions; let i = index">
+        <div *ngIf="votingSessions.length === 0" class="no-sessions-message">
+            <p>There are no voting sessions available for you. Please check back later.</p>
+        </div>
+        <div class="votingSession" *ngFor="let votingSession of votingSessions; let i = index">
             <div class="header">
-                <p class="status" [ngClass]="getStatusClass(session.status)">
-                    {{session.title}} (Status: <span>{{ session.status }}</span>)
+                <p class="status" [ngClass]="getStatusClass(votingSession.status)">
+                    {{votingSession.title}} (Status: <span>{{ votingSession.status }}</span>)
                 </p>
                 <div class="footer">
-                    <span class="time-remaining">{{ session.time_remaining }}</span>
+                    <span class="time-remaining">{{ votingSession.time_remaining }}</span>
                     <button
                             *ngIf="!isAdmin"
                             class="vote-btn"
-                            [ngClass]="getButtonClass(session)"
-                            [disabled]="isButtonDisabled(session)"
-                            (click)="handleAction(session)"
+                            [ngClass]="getButtonClass(votingSession)"
+                            [disabled]="isButtonDisabled(votingSession)"
+                            (click)="handleAction(votingSession)"
                     >
-                        {{ getButtonLabel(session) }}
+                        {{ getButtonLabel(votingSession) }}
                     </button>
-
                     <button
                             *ngIf="isAdmin"
                             class="delete-btn"
-                            (click)="deleteSession(session.id)"
-                            title="Delete session"
-                    > Delete Session
+                            [disabled]="votingSession.status !== 'upcoming'"
+                            [ngClass]="{ 'delete-btn': true, 'greyed-out': votingSession.status !== 'upcoming' }"
+                            (click)="deleteVotingSession(votingSession.id)"
+                            title="Delete Voting Session"
+                    >
+                        Delete Voting Session
                     </button>
                 </div>
             </div>
 
-            <div class="question-box" [ngClass]="{ 'submitted-box': session.status === 'vote submitted' }">
-                <p>{{ session.question }}</p>
-<!--                <p class="stats-link" *ngIf="session.status === 'vote submitted'">-->
-<!--                    Go to <a [href]="session.stats_url" target="_blank">{{ session.stats_url }}</a> to see this-->
-<!--                    session’s statistics-->
+            <div class="question-box" [ngClass]="{ 'submitted-box': votingSession.status === 'vote submitted' }">
+                <p>Question: "{{ votingSession.question }}"</p>
+<!--                <p class="stats-link" *ngIf="votingSession.status === 'vote submitted'">-->
+<!--                    Go to <a [href]="votingSession.stats_url" target="_blank">{{ votingSession.stats_url }}</a> to see this-->
+<!--                    votingSession’s statistics-->
 <!--                </p>-->
             </div>
         </div>
     </div>
 </div>
+
+<ng-template #notActive>
+    <div class="container1">
+        <h2>Voting Sessions</h2>
+        <p>Your profile must have the status <strong>ACTIVE</strong> to view and participate in voting sessions.</p>
+        <p>Please contact your organization's admin to activate your profile.</p>
+    </div>
+</ng-template>

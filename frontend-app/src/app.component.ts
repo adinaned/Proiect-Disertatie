@@ -1,38 +1,53 @@
-import {Component} from '@angular/core';
-import {Router} from '@angular/router';
-import {RouterModule} from '@angular/router';
-import {NgIf, NgOptimizedImage} from "@angular/common";
-import {LogoutService} from "./app/services/auth/logout.service";
+import {Component, OnInit} from '@angular/core';
+import {Router, RouterOutlet} from '@angular/router';
+import {LogoutService} from './app/services/auth/logout.service';
 import {AuthService} from './app/services/auth/auth.service';
+import {NgIf, NgOptimizedImage} from "@angular/common";
+import {UserService} from "./app/services/users/user.service";
 
 @Component({
     selector: 'app-root',
-    imports: [RouterModule, NgIf, NgOptimizedImage],
     templateUrl: './app.component.html',
-    styleUrls: ['./app.component.css'],
+    imports: [
+        NgOptimizedImage,
+        NgIf,
+        RouterOutlet
+    ],
+    styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+    showMenu = false;
+    user: any = null;
+    isAdmin: boolean = false;
+
     constructor(
         private router: Router,
         private logoutService: LogoutService,
+        private userService: UserService,
         public authService: AuthService
     ) {
     }
 
-    showMenu = false;
-    title = 'Software Voting Application';
-    userName: string = '';
-    isAdmin: boolean = false;
+    async ngOnInit() {
+        try {
+            await this.authService.getCurrentUserFromCookie();
 
-    ngOnInit() {
-        if (this.authService.isLoggedIn()) {
-            const profile = JSON.parse(localStorage.getItem('user') || '{}');
-            this.userName = profile.first_name || 'User';
-
-            const roleId = profile.role_id;
-            this.isAdmin = roleId === 1;
+            this.authService.user$.subscribe(user => {
+                if (user && user.user_id) {
+                    this.user = user;
+                    console.log('Auth user updated in AppComponent:', user);
+                    this.checkIfUserIsAdmin(user.user_id);
+                } else {
+                    console.warn('User is null or missing user_id');
+                    this.user = null;
+                }
+            });
+        } catch (err) {
+            console.error('Error loading user from cookie:', err);
+            this.user = null;
         }
     }
+
 
     handleHome() {
         console.log("Switching to 'Voting sessions' tab");
@@ -71,6 +86,44 @@ export class AppComponent {
         this.logoutService.logout();
     }
 
+    get authenticated(): boolean {
+        return !!this.user;
+    }
+
+    get userName(): string {
+        return this.user?.first_name || 'User';
+    }
+
+    checkIfUserIsAdmin(user_id: any): void {
+        this.userService.getUserById(user_id).subscribe({
+            next: (userRes) => {
+                const roleId = userRes?.role_id;
+                if (!roleId) return;
+
+                this.userService.getRoleById(roleId).subscribe({
+                    next: (roleRes) => {
+                        const roleName = roleRes?.name?.toLowerCase();
+                        this.isAdmin = roleName === 'admin';
+                        console.log("User is admin?", this.isAdmin);
+                    },
+                    error: () => console.error('Error fetching role info.')
+                });
+            },
+            error: () => console.error('Error fetching user details.')
+        });
+    }
+
+    createVotingSession() {
+        console.log("Navigating to 'Create Voting Session'");
+        this.router.navigate(['/create-voting-session']).then(success => {
+            if (success) {
+                console.log('Navigated to Create Voting Session page!');
+            } else {
+                console.warn('Navigation to Create Voting Session failed.');
+            }
+        });
+    }
+
     viewUserProfiles() {
         console.log("Navigating to 'User Profiles'");
         this.router.navigate(['/user-profiles']).then(success => {
@@ -89,17 +142,6 @@ export class AppComponent {
                 console.log('Navigated to Voting Sessions page!');
             } else {
                 console.warn('Navigation to Voting Sessions failed.');
-            }
-        });
-    }
-
-    createVotingSession() {
-        console.log("Navigating to 'Create Voting Session'");
-        this.router.navigate(['/create-voting-session']).then(success => {
-            if (success) {
-                console.log('Navigated to Create Voting Session page!');
-            } else {
-                console.warn('Navigation to Create Voting Session failed.');
             }
         });
     }

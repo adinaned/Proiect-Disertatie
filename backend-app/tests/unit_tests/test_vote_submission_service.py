@@ -47,20 +47,20 @@ class TestVoteSubmissionService(unittest.TestCase):
     def test_create_vote_submission(self):
         data = {
             "user_id": self.test_user.id,
-            "session_id": self.test_session.id
+            "voting_session_id": self.test_session.id
         }
         vote_submission_data = create_vote_submission(data)
 
         vote_submission = self.session.query(VoteSubmission).filter_by(id=vote_submission_data["id"]).first()
         self.assertIsNotNone(vote_submission)
         self.assertEqual(vote_submission.user_id, self.test_user.id)
-        self.assertEqual(vote_submission.session_id, self.test_session.id)
+        self.assertEqual(vote_submission.voting_session_id, self.test_session.id)
         self.assertFalse(vote_submission.has_voted)
 
     def test_create_vote_submission_invalid_user(self):
         data = {
             "user_id": 999,
-            "session_id": self.test_session.id
+            "voting_session_id": self.test_session.id
         }
         with self.assertRaises(ValueError) as context:
             create_vote_submission(data)
@@ -69,7 +69,7 @@ class TestVoteSubmissionService(unittest.TestCase):
     def test_create_vote_submission_invalid_session(self):
         data = {
             "user_id": self.test_user.id,
-            "session_id": 999
+            "voting_session_id": 999
         }
         with self.assertRaises(ValueError) as context:
             create_vote_submission(data)
@@ -78,7 +78,7 @@ class TestVoteSubmissionService(unittest.TestCase):
     def test_get_vote_submission_by_id(self):
         vote_submission = VoteSubmission(
             user_id=self.test_user.id,
-            session_id=self.test_session.id,
+            voting_session_id=self.test_session.id,
             has_voted=False
         )
         self.session.add(vote_submission)
@@ -93,8 +93,8 @@ class TestVoteSubmissionService(unittest.TestCase):
         self.assertIsNone(vote_submission_data)
 
     def test_get_all_vote_submissions(self):
-        vote_submission1 = VoteSubmission(user_id=self.test_user.id, session_id=self.test_session.id, has_voted=False)
-        vote_submission2 = VoteSubmission(user_id=self.test_user.id, session_id=self.test_session.id, has_voted=True)
+        vote_submission1 = VoteSubmission(user_id=self.test_user.id, voting_session_id=self.test_session.id, has_voted=False)
+        vote_submission2 = VoteSubmission(user_id=self.test_user.id, voting_session_id=self.test_session.id, has_voted=True)
         self.session.add_all([vote_submission1, vote_submission2])
         self.session.commit()
 

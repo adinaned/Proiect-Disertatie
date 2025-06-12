@@ -1,17 +1,21 @@
-from venv import create
+from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey
+from sqlalchemy.dialects.mysql import CHAR
+from sqlalchemy.orm import relationship
+import uuid
 
-from sqlalchemy import Column, Integer, String, Boolean, Date, ForeignKey
 from . import db
 
 
 class Email(db.Model):
     __tablename__ = "emails"
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    email_address = Column(String(320), index=True)
-    is_verified = Column(Boolean, default=False)
-    created_at = Column(Date)
+    id = Column(CHAR(36), primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(CHAR(36), ForeignKey("users.id"), nullable=False)
+    email_address = Column(String(320), index=True, nullable=False)
+    is_verified = Column(Boolean, default=True, nullable=False)
+    created_at = Column(DateTime, nullable=False)
+
+    user = relationship("User", back_populates="email")
 
     def to_dict(self):
         return {"id": self.id,

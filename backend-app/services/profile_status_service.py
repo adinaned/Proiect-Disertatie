@@ -1,74 +1,76 @@
 from datetime import datetime, timezone
+import traceback
+import uuid
 
-from models import ProfileStatus, db
+from models import ProfileStatus, db, User
 from schemas.profile_status_schema import ProfileStatusResponse
 
-import traceback
+ALLOWED_STATUS_NAMES = {"ACTIVE", "PENDING", "CLOSED", "SUSPENDED"}
 
 
-def create_profile_status(data):
-    if not isinstance(data, dict):
-        raise ValueError("Payload must be a JSON object")
+def create_profile_status(obj):
+    user_id = obj.get("user_id")
+    user = db.session.get(User, user_id)
+    if not user:
+        return {"message": f"User with ID {user_id} does not exist."}
 
-    if "id" in data:
-        raise ValueError("You cannot manually set the ID")
+    name = obj.get("name")
+    if not isinstance(name, str) or not name.strip():
+        return {"message": "The 'name' field must be a non-empty string."}
 
-    name = data.get("name")
-    user_id = data.get("user_id")
-    updated_at = data.get("updated_at")
+    allowed = [v.upper() for v in ProfileStatus.__table__.c.name.type.enums]
+    name_upper = name.strip().upper()
+    if name_upper not in allowed:
+        return {"message": f"The 'name' field must be one of {allowed}"}
 
-    if not name or name not in ProfileStatus.__table__.c.name.type.enums:
-        raise ValueError(f"The 'name' field is required and must be one of {ProfileStatus.__table__.c.name.type.enums}")
+    existing = db.session.query(ProfileStatus).filter_by(user_id=user_id).first()
+    if existing:
+        return {"message": f"ProfileStatus already exists for user ID {user_id}."}
 
-    profile_status = ProfileStatus(
-        name=name,
+    new_status = ProfileStatus(
+        name=name_upper,
         user_id=user_id,
-        updated_at=updated_at
+        updated_at= obj.get("updated_at")
     )
 
-    db.session.add(profile_status)
-
-    try:
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        raise e
-
-    return ProfileStatusResponse.model_validate(profile_status).model_dump()
+    return new_status
 
 
 def get_profile_status_by_user_id(user_id):
+    user = db.session.get(User, user_id)
+    if not user:
+        return {"message": f"User with ID {user_id} does not exist."}
+
     profile_status = db.session.query(ProfileStatus).filter_by(user_id=user_id).first()
     if not profile_status:
-        return None
+        return {"message": "Failed to find profile status for the specified user."}
 
-    return ProfileStatusResponse.model_validate(profile_status).model_dump()
-
-
-def get_all_profile_statuses():
-    profile_statuses = ProfileStatus.query.all()
-    if not profile_statuses:
-        return []
-
-    return [ProfileStatusResponse.model_validate(status).model_dump() for status in profile_statuses]
+    return {
+        "message": "Profile status retrieved successfully.",
+        "data": ProfileStatusResponse.model_validate(profile_status).model_dump()
+    }
 
 
 def update_profile_status_by_user_id(user_id, data):
-    if not isinstance(data, dict):
-        raise ValueError("Payload must be a non-empty dictionary")
+    if not isinstance(data, dict) or not data:
+        return {"message": "Payload must be a non-empty dictionary."}
 
     if "id" in data:
-        raise ValueError("You cannot modify the ID")
+        return {"message": "You cannot modify the ID."}
+
+    user = db.session.get(User, user_id)
+    if not user:
+        return {"message": f"User with ID {user_id} does not exist."}
 
     profile_status = db.session.query(ProfileStatus).filter_by(user_id=user_id).first()
     if not profile_status:
-        raise ValueError("ProfileStatus not found")
+        return {"message": f"ProfileStatus not found for user ID {user_id}."}
 
     if "name" in data:
         name = data["name"].upper().strip()
         allowed = [v.upper() for v in ProfileStatus.__table__.c.name.type.enums]
         if name not in allowed:
-            raise ValueError(f"The 'name' field must be one of {allowed}")
+            return {"message": f"The 'name' field must be one of {allowed}"}
         profile_status.name = name
 
     data["updated_at"] = datetime.now(timezone.utc).isoformat()
@@ -81,21 +83,9 @@ def update_profile_status_by_user_id(user_id, data):
     except Exception as e:
         traceback.print_exc()
         db.session.rollback()
-        raise e
+        return {"message": f"Failed to update profile status: {str(e)}"}
 
-    return ProfileStatusResponse.model_validate(profile_status).model_dump()
-
-
-def delete_profile_status(profile_status_id):
-    profile_status = db.session.get(ProfileStatus, profile_status_id)
-    if not profile_status:
-        return {"message": "ProfileStatus not found"}
-
-    db.session.delete(profile_status)
-
-    try:
-        db.session.commit()
-        return {"message": "ProfileStatus deleted successfully"}
-    except Exception as e:
-        db.session.rollback()
-        raise e
+    return {
+        "message": "Profile status updated successfully.",
+        "data": ProfileStatusResponse.model_validate(profile_status).model_dump()
+    }

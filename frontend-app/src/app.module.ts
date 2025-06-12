@@ -1,12 +1,12 @@
 import {FormsModule} from '@angular/forms';
 import {NgModule} from "@angular/core";
+import {provideHttpClient, withFetch} from '@angular/common/http';
 import {BrowserModule} from '@angular/platform-browser';
-import {RouterModule} from '@angular/router';
-import { routes } from './app/routes/app.routes';
+import {RouterModule, provideRouter} from '@angular/router';
+import {CookieService} from 'ngx-cookie-service';
 
 import {AppComponent} from './app.component';
-import { provideHttpClient, withFetch } from '@angular/common/http';
-import { provideRouter } from '@angular/router';
+import {routes} from './app/routes/app.routes';
 
 @NgModule({
     declarations: [],
@@ -18,7 +18,8 @@ import { provideRouter } from '@angular/router';
     ],
     providers: [
         provideHttpClient(withFetch()),
-        provideRouter(routes)
+        provideRouter(routes),
+        CookieService
     ]
 })
 export class AppModule {

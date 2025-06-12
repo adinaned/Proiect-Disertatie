@@ -10,6 +10,7 @@
     height: 60vh;
     overflow-y: scroll;
     padding-right: 2em;
+
     scrollbar-width: auto;
     scrollbar-color: #1e4c57 #ffffff;
 }
@@ -32,7 +33,7 @@ h2, p, span {
     font-weight: bold;
 }
 
-.status.open span {
+.status.pending span {
     color: #C2AD27;
 }
 
@@ -92,7 +93,7 @@ h2, p, span {
 .user-profile-box {
     background-color: #d9d9d9;
     padding-left: 1em;
-    padding-bottom: 1em;
     border-radius: 20px;
 }
+
 

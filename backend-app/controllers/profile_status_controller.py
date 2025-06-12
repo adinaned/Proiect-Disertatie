@@ -1,49 +1,45 @@
 from flask import jsonify, request
-from services import (create_profile_status, get_all_profile_statuses, get_profile_status_by_user_id, update_profile_status_by_user_id, delete_profile_status)
-
-
-def create():
-    try:
-        data = request.get_json()
-        new_profile_status = create_profile_status(data)
-        return jsonify(new_profile_status), 201
-    except ValueError as ve:
-        return jsonify({"message": str(ve)}), 400
-    except Exception as e:
-        return jsonify({"message": str(e)}), 500
+from services import (
+    get_profile_status_by_user_id,
+    update_profile_status_by_user_id,
+)
 
 
 def get_by_user_id(user_id):
-    profile_status = get_profile_status_by_user_id(user_id)
-    if profile_status:
-        return jsonify(profile_status), 200
-    return jsonify({"message": "ProfileStatus not found"}), 404
+    result = get_profile_status_by_user_id(user_id)
 
+    if "data" in result:
+        return jsonify(result), 200
+    if f"User with ID {user_id} does not exist." in result.get("message", ""):
+        return jsonify(result), 404
+    if "Failed to find profile status for the specified user." in result.get("message", ""):
+        return jsonify(result), 404
 
-def get_all():
-    profile_statuses = get_all_profile_statuses()
-    if not profile_statuses:
-        return jsonify([]), 200
-    return jsonify(profile_statuses), 200
+    return jsonify(result), 400
 
 
 def update_by_user_id(user_id):
     try:
         data = request.get_json()
-        print(data)
-        updated_profile_status = update_profile_status_by_user_id(user_id, data)
-        return jsonify(updated_profile_status), 200
+
+        if not isinstance(data, dict):
+            return jsonify({"message": "Payload must be a JSON object."}), 400
+
+        name = data.get("name")
+        if not name or not isinstance(name, str) or not name.strip():
+            return jsonify({"message": "The 'name' field is required and must be a non-empty string."}), 400
+
+        result = update_profile_status_by_user_id(user_id, data)
+
+        if "data" in result:
+            return jsonify(result), 200
+        if "does not exist" in result.get("message", ""):
+            return jsonify(result), 404
+        if "not found" in result.get("message", ""):
+            return jsonify(result), 404
+
+        return jsonify(result), 400
     except ValueError as ve:
         return jsonify({"message": str(ve)}), 400
-    except Exception as e:
-        return jsonify({"message": str(e)}), 500
-
-
-def delete(profile_status_id):
-    try:
-        result = delete_profile_status(profile_status_id)
-        if result.get("message") == "ProfileStatus not found":
-            return jsonify(result), 404
-        return jsonify(result), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 500

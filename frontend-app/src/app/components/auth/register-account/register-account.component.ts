@@ -32,44 +32,51 @@ export class RegisterAccountComponent {
         });
     }
 
-    handleRegister(): void {
+    async handleRegister(): Promise<void> {
         if (this.password !== this.confirmPassword) {
             alert('Passwords are not the same!');
             return;
         }
 
-        const profileData = {
-            first_name: this.firstName,
-            last_name: this.lastName,
-        };
+        try {
+            const hashedPassword = await this.hashPassword(this.password);
 
-        const emailData = {
-            email_address: this.email,
-        };
+            const profileData = {
+                first_name: this.firstName,
+                last_name: this.lastName,
+                email_address: this.email,
+                password: hashedPassword,
+            };
 
-        const passwordData = {
-            password: this.password,
+            this.userDraftService.getEmail(profileData.email_address).subscribe({
+                next: (exists) => {
+                    if (exists) {
+                        alert('This email is already registered. Please use a different email.');
+                        return;
+                    }
+                },
+                error: (err) => {
+                    if (err.status === 404) {
+                        this.userDraftService.setAccountData(profileData);
+                        console.log('Profile data being set:', profileData);
+                        this.router.navigate(['/register-profile']);
+                    } else {
+                        console.error('Error checking email existence:', err);
+                        alert('An error occurred while checking the email. Please try again.');
+                    }
+                }
+            });
+        } catch (err) {
+            console.error('Error hashing password:', err);
+            alert('An unexpected error occurred. Please try again.');
         }
+    }
 
-        this.userDraftService.getEmail(this.email).subscribe({
-            next: (exists) => {
-                if (exists) {
-                    alert('This email is already registered. Please use a different email.');
-                    return;
-                }
-            },
-            error: (err) => {
-                if (err.status === 404) {
-                    this.userDraftService.setAccountData(profileData, passwordData, emailData);
-                    console.log('Profile data being set:', profileData);
-                    console.log('Password data being set:', passwordData);
-                    console.log('Email data being set:', emailData);
-                    this.router.navigate(['/register-profile']);
-                } else {
-                    console.error('Error checking email existence:', err);
-                    alert('An error occurred while checking the email. Please try again.');
-                }
-            }
-        });
+    private async hashPassword(password: string): Promise<string> {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 }

@@ -2,9 +2,9 @@ from pydantic import BaseModel
 
 
 class OptionResponse(BaseModel):
-    id: int
+    id: str
     name: str
-    session_id: int
+    voting_session_id: str
 
     class Config:
         from_attributes = True

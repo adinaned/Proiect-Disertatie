@@ -9,21 +9,21 @@ def create_new_user_endpoint():
     return create()
 
 
-@user_routes.route('/users', methods=['GET'])
-def get_users_endpoint():
-    return get_all()
-
-
-@user_routes.route('/users/<int:user_id>', methods=['GET'])
+@user_routes.route('/users/<string:user_id>', methods=['GET'])
 def get_user_by_id_endpoint(user_id):
     return get_by_id(user_id)
 
 
-@user_routes.route('/users/<int:user_id>', methods=['PUT'])
+@user_routes.route('/users/organization/<string:organization_id>', methods=['GET'])
+def get_user_by_organization_id_endpoint(organization_id):
+    return get_all_by_organization_id(organization_id)
+
+
+@user_routes.route('/users/<string:user_id>', methods=['PATCH'])
 def update_user_by_id_endpoint(user_id):
     return update(user_id)
 
 
-@user_routes.route('/users/<int:user_id>', methods=['DELETE'])
+@user_routes.route('/users/<string:user_id>', methods=['DELETE'])
 def delete_user_endpoint(user_id):
     return delete(user_id)

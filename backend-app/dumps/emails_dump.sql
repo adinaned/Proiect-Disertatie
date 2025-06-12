@@ -1,0 +1,7 @@
+INSERT IGNORE INTO emails (id, user_id, email_address, is_verified, created_at) VALUES ('46c76aa2-bcc0-4da3-b0e2-021dff87832b', 'ec3fa19f-4ff6-4db7-b876-b4757dd1e470', 'user1@yahoo.com', 1, '2025-06-09 00:00:00');
+INSERT IGNORE INTO emails (id, user_id, email_address, is_verified, created_at) VALUES ('b5d299a4-a0b8-485e-bd35-69778a15fe98', '9dbfc87d-e686-41e1-9276-1d70177ea588', 'user2@yahoo.com', 1, '2025-06-09 00:00:00');
+INSERT IGNORE INTO emails (id, user_id, email_address, is_verified, created_at) VALUES ('0ea20020-2db9-48d4-ab4c-86a2495e891c', '52aeff03-d426-437c-9303-3230930d3ac2', 'user3@yahoo.com', 1, '2025-06-09 00:00:00');
+INSERT IGNORE INTO emails (id, user_id, email_address, is_verified, created_at) VALUES ('dcd92231-8e95-420b-adbd-1898d08e479d', 'fc4c497d-a547-4e12-ae5d-db1e859d1a7b', 'admin1@yahoo.com', 1, '2025-06-09 00:00:00');
+INSERT IGNORE INTO emails (id, user_id, email_address, is_verified, created_at) VALUES ('7ecf47f1-7f63-4e76-a2b4-a6b6911875f4', '4822ec16-8c54-43b0-91f5-3ce511d5f8d5', 'admin2@yahoo.com', 1, '2025-06-09 00:00:00');
+INSERT IGNORE INTO emails (id, user_id, email_address, is_verified, created_at) VALUES ('b5eba5f2-8ec6-4f31-8866-195bc1c2f78e', 'bc2e1464-3079-4806-98bc-a30e131709fb', 'admin3@yahoo.com', 1, '2025-06-09 00:00:00');
+INSERT IGNORE INTO emails (id, user_id, email_address, is_verified, created_at) VALUES ('fed361be-e807-4b1e-a673-fb59c5c2ead9', 'e4acc786-3435-4da0-811e-54d95b4729f7', 'admin4@yahoo.com', 1, '2025-06-09 00:00:00');

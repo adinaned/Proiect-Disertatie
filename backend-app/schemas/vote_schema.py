@@ -2,10 +2,11 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import Union
 
+
 class VoteResponse(BaseModel):
-    id: int
-    session_id: int
-    option_id: int
+    id: str
+    voting_session_id: str
+    option_id: str
     token: str
     key_image: Union[str, dict]
     ring_hash: str

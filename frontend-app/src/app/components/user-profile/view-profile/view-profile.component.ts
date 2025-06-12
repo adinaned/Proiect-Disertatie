@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { catchError, of, switchMap } from 'rxjs';
-import {NgClass, NgIf} from '@angular/common';
+import {Component, OnInit} from '@angular/core';
+import {catchError, forkJoin, from, of, switchMap} from 'rxjs';
+import {ViewProfileService} from '../../../services/user-profile/view-profile.service';
+import {NgIf, NgClass} from '@angular/common';
+import {AuthService} from "../../../services/auth/auth.service";
 
 @Component({
     selector: 'app-auth-auth',
@@ -11,6 +11,7 @@ import {NgClass, NgIf} from '@angular/common';
     templateUrl: './view-profile.component.html',
     styleUrls: ['../../auth/shared/auth-form.component.css', './view-profile.component.css']
 })
+
 export class ViewProfileComponent implements OnInit {
     profile: any;
     email: string = '';
@@ -18,80 +19,63 @@ export class ViewProfileComponent implements OnInit {
     organization: string = '';
     role: string = '';
     profileStatus: string = '';
+    dateOfBirthFormatted: string = '';
 
     constructor(
-        private router: Router,
-        private http: HttpClient
-    ) {}
+        private profileService: ViewProfileService,
+        private authService: AuthService
+    ) {
+    }
 
     ngOnInit(): void {
-        const userDataString = localStorage.getItem('user');
-
-        if (!userDataString) {
-            console.log("'user' data not found in localStorage.");
-            return;
-        }
-
-        try {
-            const userData = JSON.parse(userDataString);
-            this.email = userData?.email;
-            if (!this.email) {
-                console.log('Email not found in user data');
-                return;
-            }
-        } catch (e) {
-            console.error('Error parsing user JSON:', e);
-            return;
-        }
-
-        this.http.get<any>(`http://127.0.0.1:5000/emails/${this.email}`)
+        from(this.authService.getCurrentUserFromCookie())
             .pipe(
-                switchMap(emailResponse => {
-                    const userId = emailResponse?.user_id;
-                    if (!userId) {
-                        throw new Error('user_id not found in email response');
-                    }
+                switchMap(user => {
+                    const userId = user?.user_id;
+                    if (!userId) throw new Error('User not found in cookie');
 
-                    return this.http.get<any>(`http://127.0.0.1:5000/users/${userId}`).pipe(
-                        switchMap(userData => {
-                            this.profile = userData;
-                            this.getCountryName(userData.country_id);
-                            this.getOrganizationName(userData.organization_id);
-                            this.getRoleName(userData.role_id);
+                    return this.profileService.getEmail(userId).pipe(
+                        switchMap(emailRes => {
+                            this.email = emailRes?.email_address || '';
 
-                            return this.http.get<any>(`http://127.0.0.1:5000/profile_statuses/${userId}`);
+                            return this.profileService.getUserDetails(userId).pipe(
+                                switchMap(userData => {
+                                    this.profile = userData;
+
+                                    if (userData.date_of_birth) {
+                                        const date = new Date(userData.date_of_birth);
+                                        this.dateOfBirthFormatted = date.toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric'
+                                        });
+                                    }
+
+                                    return forkJoin({
+                                        country: this.profileService.getCountryName(userData.country_id),
+                                        organization: this.profileService.getOrganizationName(userData.organization_id),
+                                        role: this.profileService.getRoleName(userData.role_id),
+                                        status: this.profileService.getProfileStatus(userId)
+                                    });
+                                })
+                            );
                         })
                     );
                 }),
                 catchError(error => {
-                    console.error('API error:', error);
+                    console.error('Error loading profile:', error);
                     return of(null);
                 })
             )
-            .subscribe(profileStatusResponse => {
-                this.profileStatus = profileStatusResponse?.name?.toUpperCase() || 'UNKNOWN';
-                console.log('Profile status:', this.profileStatus);
-            });
-    }
+            .subscribe(result => {
+                if (!result) return;
 
-    getCountryName(id: number) {
-        this.http.get<any>(`http://127.0.0.1:5000/countries/${id}`)
-            .subscribe(response => {
-                this.country = response?.name || '';
-            });
-    }
+                this.country = result.country;
+                this.organization = result.organization;
+                this.role = result.role;
+                this.profileStatus = result.status?.name?.toUpperCase() || 'UNKNOWN';
 
-    getOrganizationName(id: number) {
-        this.http.get<any>(`http://127.0.0.1:5000/organizations/${id}`)
-            .subscribe(response => {
-                this.organization = response?.name || '';
-            });
-    }
-
-    getRoleName(id: number) {
-        this.http.get<any>(`http://127.0.0.1:5000/roles/${id}`)
-            .subscribe(response => {
-                this.role = response?.name || '';
+                console.log('Profile loaded');
             });
     }
 }

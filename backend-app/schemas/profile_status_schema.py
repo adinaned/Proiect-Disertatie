@@ -3,9 +3,9 @@ from pydantic import BaseModel
 
 
 class ProfileStatusResponse(BaseModel):
-    id: int
+    id: str
     name: str
-    user_id: int
+    user_id: str
     updated_at: datetime
 
     class Config:

@@ -1,0 +1,10 @@
+INSERT IGNORE INTO roles (id, name, organization_id) VALUES ('9ed4429c-30c2-461a-b024-9d9fddd2928a', 'role1_for_ORG_001-test', 'f77f56af-f608-4db0-9c10-373a87d252a7');
+INSERT IGNORE INTO roles (id, name, organization_id) VALUES ('dd4c964c-90ce-4750-98b0-e3f647866af4', 'role2_for_ORG_001-test', 'f77f56af-f608-4db0-9c10-373a87d252a7');
+INSERT IGNORE INTO roles (id, name, organization_id) VALUES ('1bafbc7c-f724-4d42-ae2e-a01017e1cfef', 'admin', 'f77f56af-f608-4db0-9c10-373a87d252a7');
+INSERT IGNORE INTO roles (id, name, organization_id) VALUES ('e7edfe64-dd6c-4eaf-8489-f0791db4c7f1', 'role1 51 AREA', 'a4c720af-26ec-495d-8ed2-da9590aaa7b1');
+INSERT IGNORE INTO roles (id, name, organization_id) VALUES ('8bcba122-8f29-49bc-9c6f-3e1dfbf16065', 'admin', 'a4c720af-26ec-495d-8ed2-da9590aaa7b1');
+INSERT IGNORE INTO roles (id, name, organization_id) VALUES ('852a8c41-779e-4c93-9a9d-16214767bb90', 'cactus no.1 We LOVE cactuses!', '1705a9bf-6d02-4516-a20b-41ca0ad4f545');
+INSERT IGNORE INTO roles (id, name, organization_id) VALUES ('008973bf-4c6d-4ad5-85b4-554f66ef214e', 'cactus no.2', '1705a9bf-6d02-4516-a20b-41ca0ad4f545');
+INSERT IGNORE INTO roles (id, name, organization_id) VALUES ('f64f891d-7d09-4a61-bceb-20205eb95530', 'Cactus org. Role', '1705a9bf-6d02-4516-a20b-41ca0ad4f545');
+INSERT IGNORE INTO roles (id, name, organization_id) VALUES ('7239a71d-f47f-4de8-a289-48f29c9a11ce', 'admin', '1705a9bf-6d02-4516-a20b-41ca0ad4f545');
+INSERT IGNORE INTO roles (id, name, organization_id) VALUES ('7577619d-12ca-407d-ac86-be746e51371b', 'admin', '732f2c3e-195a-471e-97a7-0ad1951df3c3');

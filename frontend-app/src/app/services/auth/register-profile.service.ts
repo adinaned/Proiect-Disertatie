@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, switchMap} from 'rxjs';
+import {Observable} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 
 @Injectable({providedIn: 'root'})
@@ -9,48 +9,20 @@ export class RegisterProfileService {
 
     private baseUrl = 'http://127.0.0.1:5000';
 
-    postProfile(data: any): Observable<any> {
+    registerProfile(data: any): Observable<any> {
         console.log('Payload for registerProfile:', data);
         return this.http.post(`${this.baseUrl}/users`, data);
     }
 
-    registerEmail(emailData: any): Observable<any> {
-        console.log('Payload for registerEmail:', emailData);
-        return this.http.post(`${this.baseUrl}/emails`, emailData);
+    getOrganizationByName(name: string): Observable<any> {
+        return this.http.get(`${this.baseUrl}/organizations/${name}`);
     }
 
-    registerPassword(passwordData: any): Observable<any> {
-        console.log('Payload for registerPassword:', passwordData);
-        return this.http.post(`${this.baseUrl}/passwords`, passwordData);
+    getCountryByName(name: string): Observable<any> {
+        return this.http.get(`${this.baseUrl}/countries/${name}`);
     }
 
-    registerProfile(profileData: any, passwordData: any, emailData: any): Observable<any> {
-        return this.postProfile(profileData).pipe(
-            switchMap((profileResponse) => {
-                const userId = profileResponse.id;
-
-                const updatedEmailData = {
-                    ...emailData,
-                    user_id: userId
-                };
-
-                const updatedPasswordData = {
-                    ...passwordData,
-                    user_id: userId
-                };
-
-                return this.registerEmail(updatedEmailData).pipe(
-                    switchMap(() => this.registerPassword(updatedPasswordData))
-                );
-            })
-        );
+    getAllCountries(): Observable<any> {
+        return this.http.get(`${this.baseUrl}/countries`);
     }
-
-    // getProfile(userId: string): Observable<any> {
-    //     return this.getUserProfile(userId);
-    // }
-    //
-    // updateProfile(userId: string, newData: any): Observable<any> {
-    //     return this.api.updateUserProfile(userId, newData);
-    // }
 }

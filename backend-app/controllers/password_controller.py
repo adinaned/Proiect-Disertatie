@@ -1,16 +1,8 @@
 from flask import jsonify, request
-from services import (create_password, get_password_by_user_id, update_password, delete_password)
-
-
-def create():
-    try:
-        data = request.get_json()
-        new_password = create_password(data)
-        return jsonify(new_password), 201
-    except ValueError as ve:
-        return jsonify({"message": str(ve)}), 400
-    except Exception as e:
-        return jsonify({"message": str(e)}), 500
+from services import (
+    get_password_by_user_id,
+    update_password
+)
 
 
 def get_by_user_id(user_id):
@@ -23,22 +15,25 @@ def get_by_user_id(user_id):
         return jsonify({"message": str(e)}), 500
 
 
-def update(password_id):
-    try:
-        data = request.get_json()
-        updated_password = update_password(password_id, data)
-        return jsonify(updated_password), 200
-    except ValueError as ve:
-        return jsonify({"message": str(ve)}), 400
-    except Exception as e:
-        return jsonify({"message": str(e)}), 500
+def update(user_id):
+    data = request.get_json()
 
+    if not isinstance(data, dict) or not data:
+        return jsonify({"message": "Payload must be a non-empty dictionary."}), 400
 
-def delete(password_id):
+    if "id" in data:
+        return jsonify({"message": "You cannot modify the ID."}), 400
+
+    old_password = data.get("old_password")
+    new_password = data.get("new_password")
+
+    if not old_password or not new_password:
+        return jsonify({"message": "Both old and new passwords are required."}), 400
+
     try:
-        result = delete_password(password_id)
-        if result.get("message") == "Password not found":
-            return jsonify(result), 404
+        result = update_password(user_id, old_password, new_password)
         return jsonify(result), 200
+    except ValueError as e:
+        return jsonify({"message": str(e)}), 400
     except Exception as e:
-        return jsonify({"message": str(e)}), 500
+        return jsonify({"message": "Internal server error", "details": str(e)}), 500

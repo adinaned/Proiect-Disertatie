@@ -12,24 +12,6 @@
     ],
     "paths": {
         "/countries": {
-            "get": {
-                "tags": [
-                    "Countries"
-                ],
-                "summary": "Get all countries",
-                "description": "Returns a list of all countries in the database.",
-                "responses": {
-                    "200": {
-                        "description": "A list of countries",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/CountryResponse"
-                            }
-                        }
-                    }
-                }
-            },
             "post": {
                 "tags": [
                     "Countries"
@@ -57,21 +39,39 @@
                         "description": "Invalid input"
                     }
                 }
-            }
-        },
-        "/countries/{country_id}": {
+            },
             "get": {
                 "tags": [
                     "Countries"
                 ],
-                "summary": "Get a country by ID",
-                "description": "Retrieves the country with the specified ID.",
+                "summary": "Get all countries",
+                "description": "Returns a list of all countries in the database.",
+                "responses": {
+                    "200": {
+                        "description": "A list of countries",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/CountryResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/countries/{country_filter}": {
+            "get": {
+                "tags": [
+                    "Countries"
+                ],
+                "summary": "Get a country by UUID or name",
+                "description": "Retrieves the country with the specified UUID or nane.",
                 "parameters": [
                     {
-                        "name": "country_id",
+                        "name": "country_filter",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     }
                 ],
                 "responses": {
@@ -85,193 +85,18 @@
                         "description": "Country not found"
                     }
                 }
-            },
-            "put": {
-                "tags": [
-                    "Countries"
-                ],
-                "summary": "Update a country by ID",
-                "description": "Updates the country with the given ID using the provided data.",
-                "parameters": [
-                    {
-                        "name": "country_id",
-                        "in": "path",
-                        "required": true,
-                        "type": "integer"
-                    },
-                    {
-                        "in": "body",
-                        "name": "country",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/CountryCreate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Country updated successfully",
-                        "schema": {
-                            "$ref": "#/definitions/CountryResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Country not found"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Countries"
-                ],
-                "summary": "Delete a country by ID",
-                "description": "Deletes the country with the specified ID.",
-                "parameters": [
-                    {
-                        "name": "country_id",
-                        "in": "path",
-                        "required": true,
-                        "type": "integer"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Country deleted successfully"
-                    },
-                    "404": {
-                        "description": "Country not found"
-                    }
-                }
             }
         },
-        "/emails": {
-            "post": {
-                "tags": [
-                    "Emails"
-                ],
-                "summary": "Create a new email",
-                "description": "Creates a new email with the given data.",
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "email",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/EmailCreate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Email created successfully",
-                        "schema": {
-                            "$ref": "#/definitions/EmailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    }
-                }
-            }
-        },
-        "/emails/{email_id}": {
+        "/emails/user/{user_id}": {
             "get": {
                 "tags": [
                     "Emails"
                 ],
-                "summary": "Get an email by ID",
-                "description": "Retrieves the email with the specified ID.",
+                "summary": "Get an email by user ID",
+                "description": "Retrieves the email with the specified user ID.",
                 "parameters": [
                     {
-                        "name": "email_id",
-                        "in": "path",
-                        "required": true,
-                        "type": "integer"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Email found",
-                        "schema": {
-                            "$ref": "#/definitions/EmailResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Email not found"
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Emails"
-                ],
-                "summary": "Update an email by ID",
-                "description": "Updates the email with the given ID using the provided data.",
-                "parameters": [
-                    {
-                        "name": "email_id",
-                        "in": "path",
-                        "required": true,
-                        "type": "integer"
-                    },
-                    {
-                        "in": "body",
-                        "name": "email",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/EmailResponse"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Email updated successfully",
-                        "schema": {
-                            "$ref": "#/definitions/EmailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "404": {
-                        "description": "Email not found"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Emails"
-                ],
-                "summary": "Delete an email by ID",
-                "description": "Deletes the email with the specified ID.",
-                "parameters": [
-                    {
-                        "name": "email_id",
-                        "in": "path",
-                        "required": true,
-                        "type": "integer"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Email deleted successfully"
-                    },
-                    "404": {
-                        "description": "Email not found"
-                    }
-                }
-            }
-        },
-        "/emails/{email_address}": {
-            "get": {
-                "tags": [
-                    "Emails"
-                ],
-                "summary": "Get an email by email address",
-                "description": "Retrieves the email with the specified email address.",
-                "parameters": [
-                    {
-                        "name": "email_address",
+                        "name": "user_id",
                         "in": "path",
                         "required": true,
                         "type": "string"
@@ -348,22 +173,32 @@
                         "description": "Invalid input"
                     }
                 }
-            },
+            }
+        },
+        "/options/voting_session/{voting_session_id}": {
             "get": {
                 "tags": [
                     "Options"
                 ],
-                "summary": "Get all options",
-                "description": "Returns a list of all options in the database.",
+                "summary": "Get an option by session ID",
+                "description": "Retrieves the option with the specified session ID.",
+                "parameters": [
+                    {
+                        "name": "voting_session_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "A list of options",
+                        "description": "Option found",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/OptionResponse"
-                            }
+                            "$ref": "#/definitions/OptionResponse"
                         }
+                    },
+                    "404": {
+                        "description": "Option not found"
                     }
                 }
             }
@@ -380,7 +215,7 @@
                         "name": "option_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     }
                 ],
                 "responses": {
@@ -395,7 +230,7 @@
                     }
                 }
             },
-            "put": {
+            "patch": {
                 "tags": [
                     "Options"
                 ],
@@ -406,14 +241,14 @@
                         "name": "option_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     },
                     {
                         "in": "body",
                         "name": "option",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/OptionResponse"
+                            "$ref": "#/definitions/OptionUpdate"
                         }
                     }
                 ],
@@ -425,7 +260,7 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Invalid inpatch"
                     },
                     "404": {
                         "description": "Option not found"
@@ -443,40 +278,12 @@
                         "name": "option_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "Option deleted successfully"
-                    },
-                    "404": {
-                        "description": "Option not found"
-                    }
-                }
-            }
-        },
-        "/options/session/{session_id}": {
-            "get": {
-                "tags": [
-                    "Options"
-                ],
-                "summary": "Get an option by session ID",
-                "description": "Retrieves the option with the specified session ID.",
-                "parameters": [
-                    {
-                        "name": "session_id",
-                        "in": "path",
-                        "required": true,
-                        "type": "integer"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Option found",
-                        "schema": {
-                            "$ref": "#/definitions/OptionResponse"
-                        }
                     },
                     "404": {
                         "description": "Option not found"
@@ -544,7 +351,7 @@
                         "name": "organization_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     }
                 ],
                 "responses": {
@@ -559,7 +366,7 @@
                     }
                 }
             },
-            "put": {
+            "patch": {
                 "tags": [
                     "Organizations"
                 ],
@@ -570,7 +377,7 @@
                         "name": "organization_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     },
                     {
                         "in": "body",
@@ -604,7 +411,7 @@
                         "name": "organization_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     }
                 ],
                 "responses": {
@@ -613,36 +420,6 @@
                     },
                     "404": {
                         "description": "Organization not found"
-                    }
-                }
-            }
-        },
-        "/passwords": {
-            "post": {
-                "tags": [
-                    "Passwords"
-                ],
-                "summary": "Create a new password",
-                "description": "Creates a new password with the given data.",
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "password",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/PasswordCreate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Password created successfully",
-                        "schema": {
-                            "$ref": "#/definitions/PasswordResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
                     }
                 }
             }
@@ -659,7 +436,7 @@
                         "name": "user_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     }
                 ],
                 "responses": {
@@ -674,7 +451,7 @@
                     }
                 }
             },
-            "put": {
+            "patch": {
                 "tags": [
                     "Passwords"
                 ],
@@ -682,17 +459,17 @@
                 "description": "Updates the password with the given userID using the provided data.",
                 "parameters": [
                     {
-                        "name": "password_id",
+                        "name": "user_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     },
                     {
                         "in": "body",
                         "name": "password",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/PasswordCreate"
+                            "$ref": "#/definitions/PasswordUpdate"
                         }
                     }
                 ],
@@ -707,92 +484,21 @@
                         "description": "Password not found"
                     }
                 }
-            },
-            "delete": {
+            }
+        },
+        "/profile_statuses/{user_id}": {
+            "get": {
                 "tags": [
-                    "Passwords"
+                    "ProfileStatuses"
                 ],
-                "summary": "Delete a password by user ID",
-                "description": "Deletes the password with the specified user ID.",
+                "summary": "Get a profile status by user ID",
+                "description": "Retrieves the profile status with the specified user ID.",
                 "parameters": [
                     {
                         "name": "user_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Password deleted successfully"
-                    },
-                    "404": {
-                        "description": "Password not found"
-                    }
-                }
-            }
-        },
-        "/profile_statuses": {
-            "post": {
-                "tags": [
-                    "ProfileStatuses"
-                ],
-                "summary": "Create a new profile status",
-                "description": "Creates a new profile status with the given data.",
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "profile_status",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/ProfileStatusCreate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Profile status created successfully",
-                        "schema": {
-                            "$ref": "#/definitions/ProfileStatusResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    }
-                }
-            },
-            "get": {
-                "tags": [
-                    "ProfileStatuses"
-                ],
-                "summary": "Get all profile statuses",
-                "description": "Returns a list of all profile statuses in the database.",
-                "responses": {
-                    "200": {
-                        "description": "A list of profile statuses",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/ProfileStatusResponse"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/profile_statuses/{id}": {
-            "get": {
-                "tags": [
-                    "ProfileStatuses"
-                ],
-                "summary": "Get a profile status by ID",
-                "description": "Retrieves the profile status with the specified ID.",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "type": "integer"
+                        "type": "string"
                     }
                 ],
                 "responses": {
@@ -807,25 +513,25 @@
                     }
                 }
             },
-            "put": {
+            "patch": {
                 "tags": [
                     "ProfileStatuses"
                 ],
-                "summary": "Update a profile status by ID",
-                "description": "Updates the profile status with the given ID using the provided data.",
+                "summary": "Update a profile status by user ID",
+                "description": "Updates the profile status with the given user ID using the provided data.",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "user_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     },
                     {
                         "in": "body",
                         "name": "profile_status",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ProfileStatusCreate"
+                            "$ref": "#/definitions/ProfileStatusUpdate"
                         }
                     }
                 ],
@@ -835,29 +541,6 @@
                         "schema": {
                             "$ref": "#/definitions/ProfileStatusResponse"
                         }
-                    },
-                    "404": {
-                        "description": "Profile status not found"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "ProfileStatuses"
-                ],
-                "summary": "Delete a profile status by ID",
-                "description": "Deletes the profile status with the specified ID.",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "type": "integer"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Profile status deleted successfully"
                     },
                     "404": {
                         "description": "Profile status not found"
@@ -919,13 +602,13 @@
                     "Roles"
                 ],
                 "summary": "Get a role by ID",
-                "description": "Retrieves the role with the specified ID.",
+                "description": "Retrieves the role with the specified UUID.",
                 "parameters": [
                     {
                         "name": "role_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     }
                 ],
                 "responses": {
@@ -940,18 +623,18 @@
                     }
                 }
             },
-            "put": {
+            "patch": {
                 "tags": [
                     "Roles"
                 ],
                 "summary": "Update a role by ID",
-                "description": "Updates the role with the given ID using the provided data.",
+                "description": "Updates the role with the given UUID using the provided data.",
                 "parameters": [
                     {
                         "name": "role_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     },
                     {
                         "in": "body",
@@ -979,13 +662,13 @@
                     "Roles"
                 ],
                 "summary": "Delete a role by ID",
-                "description": "Deletes the role with the specified ID.",
+                "description": "Deletes the role with the specified UUID.",
                 "parameters": [
                     {
                         "name": "role_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     }
                 ],
                 "responses": {
@@ -1026,22 +709,32 @@
                         "description": "Invalid input"
                     }
                 }
-            },
+            }
+        },
+        "/users/organization/{organization_id}": {
             "get": {
                 "tags": [
                     "Users"
                 ],
-                "summary": "Get all users",
-                "description": "Returns a list of all users in the database.",
+                "summary": "Get a user by the organization ID",
+                "description": "Retrieves the user with the specified organization ID.",
+                "parameters": [
+                    {
+                        "name": "organization_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "A list of users",
+                        "description": "User found",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/UserResponse"
-                            }
+                            "$ref": "#/definitions/UserResponse"
                         }
+                    },
+                    "404": {
+                        "description": "User not found"
                     }
                 }
             }
@@ -1058,7 +751,7 @@
                         "name": "user_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     }
                 ],
                 "responses": {
@@ -1073,7 +766,7 @@
                     }
                 }
             },
-            "put": {
+            "patch": {
                 "tags": [
                     "Users"
                 ],
@@ -1084,14 +777,14 @@
                         "name": "user_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     },
                     {
                         "in": "body",
                         "name": "user",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/UserCreate"
+                            "$ref": "#/definitions/UserUpdate"
                         }
                     }
                 ],
@@ -1118,7 +811,7 @@
                         "name": "user_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     }
                 ],
                 "responses": {
@@ -1159,47 +852,21 @@
                         "description": "Invalid input"
                     }
                 }
-            },
+            }
+        },
+        "/votes/{vote_token}": {
             "get": {
                 "tags": [
                     "Votes"
                 ],
-                "summary": "Get all votes",
-                "description": "Returns a list of all votes in the database.",
-                "responses": {
-                    "200": {
-                        "description": "A list of votes",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/VoteResponse"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/votes/{vote_token}": {
-            "put": {
-                "tags": [
-                    "Votes"
-                ],
-                "summary": "Update a vote by toke",
-                "description": "Updates the vote with the given token using the provided data.",
+                "summary": "Get a vote by token",
+                "description": "Gets the vote with the given token using the provided data.",
                 "parameters": [
                     {
                         "name": "vote_token",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
-                    },
-                    {
-                        "in": "body",
-                        "name": "vote",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/VoteCreate"
-                        }
+                        "type": "string"
                     }
                 ],
                 "responses": {
@@ -1213,24 +880,29 @@
                         "description": "Vote not found"
                     }
                 }
-            },
-            "delete": {
+            }
+        },
+        "/votes/voting_session_id/{voting_session_id}": {
+            "get": {
                 "tags": [
                     "Votes"
                 ],
-                "summary": "Delete a vote by token",
-                "description": "Deletes the vote with the specified token.",
+                "summary": "Get a vote by voting session ID",
+                "description": "Gets the vote by voting session ID using the provided data.",
                 "parameters": [
                     {
-                        "name": "vote_token",
+                        "name": "voting_session_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Vote deleted successfully"
+                        "description": "Vote updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/VoteResponse"
+                        }
                     },
                     "404": {
                         "description": "Vote not found"
@@ -1266,39 +938,21 @@
                         "description": "Invalid input"
                     }
                 }
-            },
+            }
+        },
+        "/vote_submissions/{submission_id}": {
             "get": {
                 "tags": [
                     "VoteSubmissions"
                 ],
-                "summary": "Get all vote submissions",
-                "description": "Returns a list of all vote submissions in the database.",
-                "responses": {
-                    "200": {
-                        "description": "A list of vote submissions",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/VoteSubmissionResponse"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/vote_submissions/{submission_id}": {
-            "put": {
-                "tags": [
-                    "VoteSubmissions"
-                ],
-                "summary": "Update a vote submission by ID",
-                "description": "Updates the vote submission with the given ID using the provided data.",
+                "summary": "Get vote submission by ID",
+                "description": "Retrieves a vote submission by its ID.",
                 "parameters": [
                     {
                         "name": "submission_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     },
                     {
                         "in": "body",
@@ -1311,7 +965,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Vote submission updated successfully",
+                        "description": "Vote submission found",
                         "schema": {
                             "$ref": "#/definitions/VoteSubmissionResponse"
                         }
@@ -1320,24 +974,38 @@
                         "description": "Vote submission not found"
                     }
                 }
-            },
-            "delete": {
+            }
+        },
+        "/vote_submissions/voting_session/{voting_session_id}": {
+            "get": {
                 "tags": [
                     "VoteSubmissions"
                 ],
-                "summary": "Delete a vote submission by ID",
-                "description": "Deletes the vote submission with the specified ID.",
+                "summary": "Get vote submissions by session ID",
+                "description": "Retrieves all vote submissions associated with a specific voting session.",
                 "parameters": [
                     {
-                        "name": "submission_id",
+                        "name": "vote_submission_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "vote_submission",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Vote submission deleted successfully"
+                        "description": "Vote submissions retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/VoteSubmissionResponse"
+                        }
                     },
                     "404": {
                         "description": "Vote submission not found"
@@ -1405,7 +1073,7 @@
                         "name": "voting_session_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     }
                 ],
                 "responses": {
@@ -1420,7 +1088,7 @@
                     }
                 }
             },
-            "put": {
+            "patch": {
                 "tags": [
                     "VotingSessions"
                 ],
@@ -1431,7 +1099,7 @@
                         "name": "voting_session_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     },
                     {
                         "in": "body",
@@ -1465,7 +1133,7 @@
                         "name": "voting_session_id",
                         "in": "path",
                         "required": true,
-                        "type": "integer"
+                        "type": "string"
                     }
                 ],
                 "responses": {
@@ -1495,7 +1163,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The unique identifier of the country"
                 },
                 "name": {
@@ -1503,23 +1171,6 @@
                     "description": "The name of the country"
                 }
             }
-        },
-        "EmailCreate": {
-            "type": "object",
-            "properties": {
-                "email_address": {
-                    "type": "string",
-                    "description": "The email address to be created"
-                },
-                "user_id": {
-                    "type": "integer",
-                    "description": "The ID of the user associated with the email"
-                }
-            },
-            "required": [
-                "email_address",
-                "user_id"
-            ]
         },
         "EmailResponse": {
             "type": "object",
@@ -1533,7 +1184,7 @@
                     "description": "The email address"
                 },
                 "user_id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The ID of the user associated with the email"
                 },
                 "is_verified": {
@@ -1542,7 +1193,7 @@
                 },
                 "created_at": {
                     "type": "string",
-                    "format": "date",
+                    "example": "2025-06-08T08:24:47",
                     "description": "The date the email was created"
                 }
             }
@@ -1580,30 +1231,42 @@
                     "type": "string",
                     "description": "The name of the option"
                 },
-                "session_id": {
-                    "type": "integer",
-                    "description": "The ID of the session associated with the option"
+                "voting_session_id": {
+                    "type": "string",
+                    "description": "The UUID of the session associated with the option"
                 }
             },
             "required": [
                 "name",
-                "session_id"
+                "voting_session_id"
+            ]
+        },
+        "OptionUpdate": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the option"
+                }
+            },
+            "required": [
+                "name"
             ]
         },
         "OptionResponse": {
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The unique identifier of the option"
                 },
                 "name": {
                     "type": "string",
                     "description": "The name of the option"
                 },
-                "session_id": {
-                    "type": "integer",
-                    "description": "The ID of the session associated with the option"
+                "voting_session_id": {
+                    "type": "string",
+                    "description": "The UUID of the session associated with the option"
                 }
             }
         },
@@ -1623,8 +1286,8 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
-                    "description": "The unique identifier of the organization"
+                    "type": "string",
+                    "description": "The organization's unique identifier"
                 },
                 "name": {
                     "type": "string",
@@ -1632,11 +1295,11 @@
                 }
             }
         },
-        "PasswordCreate": {
+        "PasswordUpdate": {
             "type": "object",
             "properties": {
                 "user_id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The ID of the user"
                 },
                 "hashed_password": {
@@ -1653,11 +1316,11 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The unique identifier of the password"
                 },
                 "user_id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The ID of the user"
                 },
                 "hashed_password": {
@@ -1666,30 +1329,20 @@
                 },
                 "updated_at": {
                     "type": "string",
-                    "format": "date",
+                    "example": "2025-06-08T08:24:47",
                     "description": "The date the password was last updated"
                 }
             }
         },
-        "ProfileStatusCreate": {
+        "ProfileStatusUpdate": {
             "type": "object",
             "properties": {
                 "name": {
                     "type": "string",
                     "description": "The status of the profile"
-                },
-                "user_id": {
-                    "type": "integer",
-                    "description": "The ID of the user associated with the profile status"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "format": "date",
-                    "description": "The date the profile status was last updated"
                 }
             },
             "required": [
-                "user_id",
                 "name"
             ]
         },
@@ -1697,7 +1350,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The ID of the profile status"
                 },
                 "name": {
@@ -1705,13 +1358,8 @@
                     "description": "The status of the profile"
                 },
                 "user_id": {
-                    "type": "integer",
-                    "description": "The ID of the user associated with the profile status"
-                },
-                "updated_at": {
                     "type": "string",
-                    "format": "date",
-                    "description": "The date the profile status was last updated"
+                    "description": "The ID of the user associated with the profile status"
                 }
             }
         },
@@ -1736,7 +1384,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The unique identifier of the role"
                 },
                 "name": {
@@ -1744,8 +1392,8 @@
                     "description": "The name of the role"
                 },
                 "organization_id": {
-                    "type": "integer",
-                    "description": "The ID of the organization associated with the role"
+                    "type": "string",
+                    "description": "The unique identifies of the organization associated with the role"
                 }
             }
         },
@@ -1766,7 +1414,7 @@
                     "description": "The date of birth of the user"
                 },
                 "country_id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The ID of the country associated with the user"
                 },
                 "city": {
@@ -1782,21 +1430,12 @@
                     "description": "The national ID of the user"
                 },
                 "role_id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The ID of the role associated with the user"
                 },
                 "organization_id": {
-                    "type": "integer",
-                    "description": "The ID of the organization associated with the user"
-                },
-                "profile_status_id": {
-                    "type": "integer",
-                    "description": "The ID of the profile status associated with the user"
-                },
-                "created_at": {
                     "type": "string",
-                    "format": "date",
-                    "description": "The date the user was created"
+                    "description": "The ID of the organization associated with the user"
                 }
             },
             "required": [
@@ -1805,15 +1444,43 @@
                 "date_of_birth",
                 "country_id",
                 "role_id",
-                "organization_id",
-                "profile_status_id"
+                "organization_id"
             ]
+        },
+        "UserUpdate": {
+            "type": "object",
+            "properties": {
+                "first_name": {
+                    "type": "string",
+                    "description": "The first name of the user"
+                },
+                "last_name": {
+                    "type": "string",
+                    "description": "The last name of the user"
+                },
+                "country_id": {
+                    "type": "string",
+                    "description": "The ID of the country associated with the user"
+                },
+                "city": {
+                    "type": "string",
+                    "description": "The city of the user"
+                },
+                "address": {
+                    "type": "string",
+                    "description": "The address of the user"
+                },
+                "national_id": {
+                    "type": "integer",
+                    "description": "The national ID of the user"
+                }
+            }
         },
         "UserResponse": {
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The unique identifier of the user"
                 },
                 "first_name": {
@@ -1830,7 +1497,7 @@
                     "description": "The date of birth of the user"
                 },
                 "country_id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The ID of the country associated with the user"
                 },
                 "city": {
@@ -1846,11 +1513,11 @@
                     "description": "The national ID of the user"
                 },
                 "role_id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The ID of the role associated with the user"
                 },
                 "organization_id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The ID of the organization associated with the user"
                 },
                 "profile_status_id": {
@@ -1859,7 +1526,7 @@
                 },
                 "created_at": {
                     "type": "string",
-                    "format": "date",
+                    "example": "2025-06-08T08:24:47",
                     "description": "The date the user was created"
                 }
             }
@@ -1867,42 +1534,58 @@
         "VoteCreate": {
             "type": "object",
             "properties": {
-                "session_id": {
-                    "type": "integer",
+                "voting_session_id": {
+                    "type": "string",
                     "description": "The ID of the voting session"
                 },
                 "option_id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The ID of the option"
+                },
+                "token": {
+                    "type": "string",
+                    "description": "The token associated to that vote"
+                },
+                "key_image": {
+                    "type": "string",
+                    "description": "The key_image of the vote"
+                },
+                "ring_hash": {
+                    "type": "string",
+                    "description": "The ring_hash of the vote"
+                },
+                "signature": {
+                    "type": "string",
+                    "description": "The signature of the vote"
                 }
             },
             "required": [
-                "session_id",
-                "option_id"
+                "voting_session_id",
+                "option_id",
+                "token",
+                "key_image",
+                "ring_hash",
+                "signature"
             ]
         },
         "VoteResponse": {
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The unique identifier of the vote"
                 },
-                "session_id": {
-                    "type": "integer",
+                "voting_session_id": {
+                    "type": "string",
                     "description": "The ID of the voting session"
                 },
                 "option_id": {
-                    "type": "integer",
-                    "description": "The ID of the option"
-                },
-                "token": {
                     "type": "string",
-                    "description": "The unique token for the vote"
+                    "description": "The ID of the option"
                 },
                 "submission_timestamp": {
                     "type": "string",
-                    "format": "date-time",
+                    "example": "2025-06-08T08:24:47",
                     "description": "The timestamp of the vote submission"
                 }
             }
@@ -1914,14 +1597,14 @@
                     "type": "integer",
                     "description": "The ID of the user"
                 },
-                "session_id": {
+                "voting_session_id": {
                     "type": "integer",
                     "description": "The ID of the voting session"
                 }
             },
             "required": [
                 "user_id",
-                "session_id"
+                "voting_session_id"
             ]
         },
         "VoteSubmissionResponse": {
@@ -1931,7 +1614,7 @@
                     "type": "integer",
                     "description": "The unique identifier of the vote submission"
                 },
-                "session_id": {
+                "voting_session_id": {
                     "type": "integer",
                     "description": "The ID of the voting session"
                 },
@@ -1954,21 +1637,21 @@
                 },
                 "start_datetime": {
                     "type": "string",
-                    "format": "date-time",
+                    "example": "2025-06-08T08:24:47",
                     "description": "The start time of the voting session"
                 },
                 "end_datetime": {
                     "type": "string",
-                    "format": "date-time",
+                    "example": "2025-06-08T08:24:47",
                     "description": "The end time of the voting session"
                 },
-                "role_id": {
-                    "type": "integer",
-                    "description": "The ID of the role associated with the voting session"
-                },
                 "organization_id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The ID of the organization associated with the voting session"
+                },
+                "role_id": {
+                    "type": "string",
+                    "description": "The ID of the role associated with the voting session"
                 }
             },
             "required": [
@@ -1976,14 +1659,15 @@
                 "start_datetime",
                 "end_datetime",
                 "role_id",
-                "organization_id"
+                "organization_id",
+                "key_ring"
             ]
         },
         "VotingSessionResponse": {
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The unique identifier of the voting session"
                 },
                 "title": {
@@ -1996,21 +1680,25 @@
                 },
                 "start_datetime": {
                     "type": "string",
-                    "format": "date-time",
+                    "example": "2025-06-08T08:24:47",
                     "description": "The start time of the voting session"
                 },
                 "end_datetime": {
                     "type": "string",
-                    "format": "date-time",
+                    "example": "2025-06-08T08:24:47",
                     "description": "The end time of the voting session"
                 },
+                "organization_id": {
+                    "type": "string",
+                    "description": "The ID of the organization associated with the voting session"
+                },
                 "role_id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The ID of the role associated with the voting session"
                 },
-                "organization_id": {
-                    "type": "integer",
-                    "description": "The ID of the organization associated with the voting session"
+                "key_ring": {
+                    "type": "string",
+                    "description": "The key ring associated with the voting session"
                 }
             }
         }

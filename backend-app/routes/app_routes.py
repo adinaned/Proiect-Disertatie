@@ -14,6 +14,7 @@ SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(SWAGGER_URL, API_URL, config={'app
 
 app = None
 
+
 def create_app():
     global app
     app = Flask(__name__)
@@ -21,7 +22,7 @@ def create_app():
     load_dotenv()
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
-    CORS(app, supports_credentials=True)
+    CORS(app, origins=["http://127.0.0.1:4200"], supports_credentials=True)
 
     @app.route('/swagger_config.json')
     def doc():

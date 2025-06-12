@@ -3,8 +3,8 @@ from pydantic import BaseModel
 
 
 class PasswordResponse(BaseModel):
-    id: int
-    user_id: int
+    id: str
+    user_id: str
     password: str
     updated_at: datetime
 

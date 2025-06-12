@@ -14,16 +14,6 @@ def get_countries_endpoint():
     return get_all()
 
 
-@country_routes.route('/countries/<int:country_id>', methods=['GET'])
-def get_country_by_id_endpoint(country_id):
-    return get_by_id(country_id)
-
-
-@country_routes.route('/countries/<int:country_id>', methods=['PUT'])
-def update_country_by_id_endpoint(country_id):
-    return update(country_id)
-
-
-@country_routes.route('/countries/<int:country_id>', methods=['DELETE'])
-def delete_country_endpoint(country_id):
-    return delete(country_id)
+@country_routes.route('/countries/<country>', methods=['GET'])
+def get_country_by_id_or_name_endpoint(country):
+    return get_by_id_or_name(country)
